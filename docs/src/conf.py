@@ -42,6 +42,7 @@ def on_config_inited(app, config):
 
 html_context = {
     'css_files': ['_static/css/style.css'],
+    "current_version": "0.3.6",
 }
 
 # Add any Sphinx extension module names here, as strings. They can be

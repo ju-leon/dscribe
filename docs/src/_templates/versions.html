@@ -1,4 +1,5 @@
 {# Add rst-badge after rst-versions for small badge style. #}
+  <script defer type="text/javascript" src="_static/js/versions.js"></script>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Versions</span>
@@ -7,10 +8,7 @@
     </span>
     <div class="rst-other-versions">
       <dl>
-        <dt>{{ _('Versions') }}</dt>
-        {% for slug, url in versions %}
-          <dd><a href="{{ url }}">{{ slug }}</a></dd>
-        {% endfor %}
+        <dt id="version-table">{{ _('Versions') }}</dt>
       </dl>
     </div>
   </div>
