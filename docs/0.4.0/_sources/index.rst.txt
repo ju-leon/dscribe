@@ -14,13 +14,11 @@ similarity analysis, etc. To get started you can check the :doc:`basic tutorial
 <tutorials/basics>`.
 
 .. note::
-   Python 3.8 is supported starting from version **0.3.5**.
-
-.. note::
-   Creating SOAP output for large systems has has been greatly improved
-   starting in version **0.3.2**. Updating is recommended if working with
-   larger systems.
-
+   Version **0.4.0** includes changes that fix the output layout of the SOAP
+   descriptor. See issue `#48 <https://github.com/SINGROUP/dscribe/issues/48>`_
+   for more details. These changes break the backwards compatibility of the
+   SOAP feature vectors. Is is thus encouraged to start using version 0.4.0 or
+   above if working with SOAP.
 
 Capabilities at a Glance
 ========================
