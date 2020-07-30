@@ -31,6 +31,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
+        <script src="../_static/js/versions.js"></script>
         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
@@ -41,8 +42,6 @@
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="dscribe.kernels package" href="dscribe.kernels.html" />
     <link rel="prev" title="dscribe.core package" href="dscribe.core.html" /> 
-  <script defer src="_static/js/versions.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
@@ -2037,8 +2036,8 @@ Valid options are:</p>
 <blockquote>
 <div><ul>
 <li><p>”off”: No averaging.</p></li>
-<li><p>”inner”: Averaging over atoms before summing up the magnetic quantum numbers: <span class="math notranslate nohighlight">\(p_{nn'l}^{Z_1,Z_2} \sim \sum_m (\frac{1}{n} \sum_i c_{nlm}^{i, Z_1})^{*} (\frac{1}{n} \sum_i c_{n'lm}^{i, Z_2})\)</span></p></li>
-<li><p>”outer”: Averaging over the power spectrum of different atoms: <span class="math notranslate nohighlight">\(p_{nn'l}^{Z_1,Z_2} \sim \frac{1}{n} \sum_i \sum_m (c_{nlm}^{i, Z_1})^{*} (c_{n'lm}^{i, Z_2})\)</span></p></li>
+<li><p>”inner”: Averaging over sites before summing up the magnetic quantum numbers: <span class="math notranslate nohighlight">\(p_{nn'l}^{Z_1,Z_2} \sim \sum_m (\frac{1}{n} \sum_i c_{nlm}^{i, Z_1})^{*} (\frac{1}{n} \sum_i c_{n'lm}^{i, Z_2})\)</span></p></li>
+<li><p>”outer”: Averaging over the power spectrum of different sites: <span class="math notranslate nohighlight">\(p_{nn'l}^{Z_1,Z_2} \sim \frac{1}{n} \sum_i \sum_m (c_{nlm}^{i, Z_1})^{*} (c_{n'lm}^{i, Z_2})\)</span></p></li>
 </ul>
 </div></blockquote>
 </p></li>

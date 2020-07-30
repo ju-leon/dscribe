@@ -31,6 +31,7 @@ author = 'Lauri Himanen, Eiaki Morooka, F. Federici Canova, Marc Jäger, Y. Rana
 
 def setup(app):
     app.add_css_file('css/style.css')
+    app.add_js_file('js/versions.js')
     app.connect('config-inited', on_config_inited)
 
 

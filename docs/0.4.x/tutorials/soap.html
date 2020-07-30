@@ -31,6 +31,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
+        <script src="../_static/js/versions.js"></script>
         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
@@ -41,8 +42,6 @@
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Many-body Tensor Representation" href="mbtr.html" />
     <link rel="prev" title="Atom-centered Symmetry Functions" href="acsf.html" /> 
-  <script defer src="_static/js/versions.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
@@ -243,7 +242,7 @@ ordering of the output vector is as follows:</p>
       for l in range(l_max+1):
          for n in range(n_max):
             for n&#39; in range(n_max):
-               if (n&#39;, Z&#39;) &gt;= (n,Z):
+               if (n&#39;, Z&#39;) &gt;= (n, Z):
                   append p(\chi)^{Z Z&#39;}_{n n&#39; l}` to output
 </pre></div>
 </div>
@@ -307,8 +306,8 @@ Valid options are:</p>
 <blockquote>
 <div><ul>
 <li><p>”off”: No averaging.</p></li>
-<li><p>”inner”: Averaging over atoms before summing up the magnetic quantum numbers: <span class="math notranslate nohighlight">\(p_{nn'l}^{Z_1,Z_2} \sim \sum_m (\frac{1}{n} \sum_i c_{nlm}^{i, Z_1})^{*} (\frac{1}{n} \sum_i c_{n'lm}^{i, Z_2})\)</span></p></li>
-<li><p>”outer”: Averaging over the power spectrum of different atoms: <span class="math notranslate nohighlight">\(p_{nn'l}^{Z_1,Z_2} \sim \frac{1}{n} \sum_i \sum_m (c_{nlm}^{i, Z_1})^{*} (c_{n'lm}^{i, Z_2})\)</span></p></li>
+<li><p>”inner”: Averaging over sites before summing up the magnetic quantum numbers: <span class="math notranslate nohighlight">\(p_{nn'l}^{Z_1,Z_2} \sim \sum_m (\frac{1}{n} \sum_i c_{nlm}^{i, Z_1})^{*} (\frac{1}{n} \sum_i c_{n'lm}^{i, Z_2})\)</span></p></li>
+<li><p>”outer”: Averaging over the power spectrum of different sites: <span class="math notranslate nohighlight">\(p_{nn'l}^{Z_1,Z_2} \sim \frac{1}{n} \sum_i \sum_m (c_{nlm}^{i, Z_1})^{*} (c_{n'lm}^{i, Z_2})\)</span></p></li>
 </ul>
 </div></blockquote>
 </p></li>
@@ -497,14 +496,18 @@ method. For further information check the <a class="reference external" href="ht
 <div class="section" id="average-output">
 <h3>Average output<a class="headerlink" href="#average-output" title="Permalink to this headline">¶</a></h3>
 <p>One way of turning a local descriptor into a global descriptor is simply by
-taking the average over all atoms. Since SOAP separates features by atom types,
-this essentially means averaging over atoms of the same type.</p>
+taking the average over all sites. DScribe supports two averaging modes:
+<em>inner</em> and <em>outer</em>. The inner average is taken over the sites before summing
+up the magnetic quantum number. Outer averaging instead averages over the
+power spectrum of individual sites. In general, the inner averaging will
+preserve the configurational information better but you can experiment with
+both versions.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">average_soap</span> <span class="o">=</span> <span class="n">SOAP</span><span class="p">(</span>
     <span class="n">species</span><span class="o">=</span><span class="n">species</span><span class="p">,</span>
     <span class="n">rcut</span><span class="o">=</span><span class="n">rcut</span><span class="p">,</span>
     <span class="n">nmax</span><span class="o">=</span><span class="n">nmax</span><span class="p">,</span>
     <span class="n">lmax</span><span class="o">=</span><span class="n">lmax</span><span class="p">,</span>
-    <span class="n">average</span><span class="o">=</span><span class="s2">&quot;outer&quot;</span><span class="p">,</span>
+    <span class="n">average</span><span class="o">=</span><span class="s2">&quot;inner&quot;</span><span class="p">,</span>
     <span class="n">sparse</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">)</span>
 
