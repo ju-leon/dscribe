@@ -22,9 +22,6 @@
 project = 'DScribe'
 author = 'Lauri Himanen, Eiaki Morooka, F. Federici Canova, Marc Jäger, Y. Ranawat'
 
-version = ''
-release = ''
-
 # -- General configuration ---------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -34,6 +31,7 @@ release = ''
 
 def setup(app):
     app.add_css_file('css/style.css')
+    app.connect('config-inited', on_config_inited)
 
 
 def on_config_inited(app, config):
@@ -42,7 +40,6 @@ def on_config_inited(app, config):
 
 html_context = {
     'css_files': ['_static/css/style.css'],
-    "current_version": "0.3.6",
 }
 
 # Add any Sphinx extension module names here, as strings. They can be
