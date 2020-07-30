@@ -69,3 +69,6 @@ Changelog
 
  - 0.3.2:
     - Improved performance for SOAP in combination with very large systems. See issue `#31 <https://github.com/SINGROUP/dscribe/issues/31>`_.
+
+ - 0.2.8:
+    - Removed support for Python 2.

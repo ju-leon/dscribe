@@ -2,7 +2,7 @@
 var xhr = new XMLHttpRequest();
 xhr.onreadystatechange = () => {
   let versions = JSON.parse(xhr.responseText).versions;
-  let versionTable = getElementById("version-table");
+  let versionTable = document.getElementById("version-table");
   for (let i=0; i < versions.length(); ++i) {
     let version = version[i];
     let dd = document.createElement("dd");
