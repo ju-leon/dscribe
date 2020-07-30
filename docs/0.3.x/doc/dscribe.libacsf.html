@@ -1,15 +1,19 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dscribe.libacsf package &mdash; DScribe 0.3.5 documentation</title>
+  <title>dscribe.libacsf package &mdash; DScribe 0.3.x documentation</title>
   
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/style.css" type="text/css" />
 
   
   
@@ -17,7 +21,9 @@
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -25,21 +31,18 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/css/style.css" type="text/css" />
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="dscribe.libmbtr package" href="dscribe.libmbtr.html" />
     <link rel="prev" title="dscribe.kernels package" href="dscribe.kernels.html" /> 
+  <script defer src="_static/js/versions.js"></script>
+
 </head>
 
 <body class="wy-body-for-nav">
@@ -66,7 +69,7 @@
             
             
               <div class="version">
-                0.3.5
+                0.3.x
               </div>
             
           
@@ -83,6 +86,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -110,6 +114,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../citing.html">Citing DScribe</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
 </ul>
@@ -117,6 +122,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -155,7 +161,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="modules.html">dscribe</a> &raquo;</li>
         
@@ -185,89 +191,11 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-dscribe.libacsf.acsfwrapper">
-<span id="dscribe-libacsf-acsfwrapper-module"></span><h2>dscribe.libacsf.acsfwrapper module<a class="headerlink" href="#module-dscribe.libacsf.acsfwrapper" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="dscribe.libacsf.acsfwrapper.ACSFWrapper">
-<em class="property">class </em><code class="sig-prename descclassname">dscribe.libacsf.acsfwrapper.</code><code class="sig-name descname">ACSFWrapper</code><a class="headerlink" href="#dscribe.libacsf.acsfwrapper.ACSFWrapper" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<dl class="attribute">
-<dt id="dscribe.libacsf.acsfwrapper.ACSFWrapper.atomic_numbers">
-<code class="sig-name descname">atomic_numbers</code><a class="headerlink" href="#dscribe.libacsf.acsfwrapper.ACSFWrapper.atomic_numbers" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="dscribe.libacsf.acsfwrapper.ACSFWrapper.create">
-<code class="sig-name descname">create</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dscribe.libacsf.acsfwrapper.ACSFWrapper.create" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="dscribe.libacsf.acsfwrapper.ACSFWrapper.g2_params">
-<code class="sig-name descname">g2_params</code><a class="headerlink" href="#dscribe.libacsf.acsfwrapper.ACSFWrapper.g2_params" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="dscribe.libacsf.acsfwrapper.ACSFWrapper.g3_params">
-<code class="sig-name descname">g3_params</code><a class="headerlink" href="#dscribe.libacsf.acsfwrapper.ACSFWrapper.g3_params" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="dscribe.libacsf.acsfwrapper.ACSFWrapper.g4_params">
-<code class="sig-name descname">g4_params</code><a class="headerlink" href="#dscribe.libacsf.acsfwrapper.ACSFWrapper.g4_params" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="dscribe.libacsf.acsfwrapper.ACSFWrapper.g5_params">
-<code class="sig-name descname">g5_params</code><a class="headerlink" href="#dscribe.libacsf.acsfwrapper.ACSFWrapper.g5_params" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="dscribe.libacsf.acsfwrapper.ACSFWrapper.n_g2">
-<code class="sig-name descname">n_g2</code><a class="headerlink" href="#dscribe.libacsf.acsfwrapper.ACSFWrapper.n_g2" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="dscribe.libacsf.acsfwrapper.ACSFWrapper.n_g3">
-<code class="sig-name descname">n_g3</code><a class="headerlink" href="#dscribe.libacsf.acsfwrapper.ACSFWrapper.n_g3" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="dscribe.libacsf.acsfwrapper.ACSFWrapper.n_g4">
-<code class="sig-name descname">n_g4</code><a class="headerlink" href="#dscribe.libacsf.acsfwrapper.ACSFWrapper.n_g4" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="dscribe.libacsf.acsfwrapper.ACSFWrapper.n_g5">
-<code class="sig-name descname">n_g5</code><a class="headerlink" href="#dscribe.libacsf.acsfwrapper.ACSFWrapper.n_g5" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="dscribe.libacsf.acsfwrapper.ACSFWrapper.n_type_pairs">
-<code class="sig-name descname">n_type_pairs</code><a class="headerlink" href="#dscribe.libacsf.acsfwrapper.ACSFWrapper.n_type_pairs" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="dscribe.libacsf.acsfwrapper.ACSFWrapper.n_types">
-<code class="sig-name descname">n_types</code><a class="headerlink" href="#dscribe.libacsf.acsfwrapper.ACSFWrapper.n_types" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="dscribe.libacsf.acsfwrapper.ACSFWrapper.rcut">
-<code class="sig-name descname">rcut</code><a class="headerlink" href="#dscribe.libacsf.acsfwrapper.ACSFWrapper.rcut" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="dscribe.libacsf.acsfwrapper.rebuild">
-<code class="sig-prename descclassname">dscribe.libacsf.acsfwrapper.</code><code class="sig-name descname">rebuild</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dscribe.libacsf.acsfwrapper.rebuild" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function for rebuilding an ACSFWrapper from serialized arguments.
-Defined as a module-level function as member functions are not picklable.</p>
-</dd></dl>
-
+<div class="section" id="dscribe-libacsf-acsfwrapper-module">
+<h2>dscribe.libacsf.acsfwrapper module<a class="headerlink" href="#dscribe-libacsf-acsfwrapper-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-dscribe.libacsf">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dscribe.libacsf" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -291,11 +219,19 @@ Defined as a module-level function as member functions are not picklable.</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -309,17 +245,12 @@ Defined as a module-level function as member functions are not picklable.</p>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Versions</span>
-      v: 0.3.5
+      v: 0.3.x
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
       <dl>
-        <dt>Versions</dt>
-        
-          <dd><a href="https://singroup.github.io/dscribe">0.3.5 (latest stable)</a></dd>
-        
-          <dd><a href="https://singroup.github.io/dscribe/dev">0.3.6a0 (development)</a></dd>
-        
+        <dt id="version-table">Versions</dt>
       </dl>
     </div>
   </div>

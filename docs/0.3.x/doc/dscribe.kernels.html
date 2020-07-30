@@ -1,15 +1,19 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>dscribe.kernels package &mdash; DScribe 0.3.5 documentation</title>
+  <title>dscribe.kernels package &mdash; DScribe 0.3.x documentation</title>
   
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/style.css" type="text/css" />
 
   
   
@@ -17,7 +21,9 @@
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -25,21 +31,18 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/css/style.css" type="text/css" />
     <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="dscribe.libacsf package" href="dscribe.libacsf.html" />
     <link rel="prev" title="dscribe.descriptors package" href="dscribe.descriptors.html" /> 
+  <script defer src="_static/js/versions.js"></script>
+
 </head>
 
 <body class="wy-body-for-nav">
@@ -66,7 +69,7 @@
             
             
               <div class="version">
-                0.3.5
+                0.3.x
               </div>
             
           
@@ -83,6 +86,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -110,6 +114,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../publications.html">Publications</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../citing.html">Citing DScribe</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../about.html">About</a></li>
 </ul>
@@ -117,6 +122,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -155,7 +161,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="modules.html">dscribe</a> &raquo;</li>
         
@@ -199,9 +205,9 @@ distributed under the License is distributed on an “AS IS” BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="dscribe.kernels.averagekernel.AverageKernel">
-<em class="property">class </em><code class="sig-prename descclassname">dscribe.kernels.averagekernel.</code><code class="sig-name descname">AverageKernel</code><span class="sig-paren">(</span><em class="sig-param">metric</em>, <em class="sig-param">gamma=None</em>, <em class="sig-param">degree=3</em>, <em class="sig-param">coef0=1</em>, <em class="sig-param">kernel_params=None</em>, <em class="sig-param">normalize_kernel=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dscribe/kernels/averagekernel.html#AverageKernel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dscribe.kernels.averagekernel.AverageKernel" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">dscribe.kernels.averagekernel.</code><code class="sig-name descname">AverageKernel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">metric</span></em>, <em class="sig-param"><span class="n">gamma</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">degree</span><span class="o">=</span><span class="default_value">3</span></em>, <em class="sig-param"><span class="n">coef0</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">kernel_params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">normalize_kernel</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dscribe/kernels/averagekernel.html#AverageKernel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dscribe.kernels.averagekernel.AverageKernel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dscribe.kernels.localsimilaritykernel.LocalSimilarityKernel" title="dscribe.kernels.localsimilaritykernel.LocalSimilarityKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dscribe.kernels.localsimilaritykernel.LocalSimilarityKernel</span></code></a></p>
 <p>Used to compute a global similarity of structures based on the average
 similarity of local atomic environments in the structure. More precisely,
@@ -240,9 +246,9 @@ kernel element <span class="math notranslate nohighlight">\(K_{ij}\)</span> with
 </ul>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="dscribe.kernels.averagekernel.AverageKernel.get_global_similarity">
-<code class="sig-name descname">get_global_similarity</code><span class="sig-paren">(</span><em class="sig-param">localkernel</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dscribe/kernels/averagekernel.html#AverageKernel.get_global_similarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dscribe.kernels.averagekernel.AverageKernel.get_global_similarity" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_global_similarity</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">localkernel</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dscribe/kernels/averagekernel.html#AverageKernel.get_global_similarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dscribe.kernels.averagekernel.AverageKernel.get_global_similarity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the average global similarity between two structures A and B.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -275,9 +281,9 @@ distributed under the License is distributed on an “AS IS” BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="dscribe.kernels.localsimilaritykernel.LocalSimilarityKernel">
-<em class="property">class </em><code class="sig-prename descclassname">dscribe.kernels.localsimilaritykernel.</code><code class="sig-name descname">LocalSimilarityKernel</code><span class="sig-paren">(</span><em class="sig-param">metric</em>, <em class="sig-param">gamma=None</em>, <em class="sig-param">degree=3</em>, <em class="sig-param">coef0=1</em>, <em class="sig-param">kernel_params=None</em>, <em class="sig-param">normalize_kernel=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dscribe/kernels/localsimilaritykernel.html#LocalSimilarityKernel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dscribe.kernels.localsimilaritykernel.LocalSimilarityKernel" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">dscribe.kernels.localsimilaritykernel.</code><code class="sig-name descname">LocalSimilarityKernel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">metric</span></em>, <em class="sig-param"><span class="n">gamma</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">degree</span><span class="o">=</span><span class="default_value">3</span></em>, <em class="sig-param"><span class="n">coef0</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">kernel_params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">normalize_kernel</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dscribe/kernels/localsimilaritykernel.html#LocalSimilarityKernel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dscribe.kernels.localsimilaritykernel.LocalSimilarityKernel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></a></p>
 <p>An abstract base class for all kernels that use the similarity of local
 atomic environments to compute a global similarity measure.</p>
@@ -308,9 +314,9 @@ kernel element <span class="math notranslate nohighlight">\(K_{ij}\)</span> with
 </ul>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="dscribe.kernels.localsimilaritykernel.LocalSimilarityKernel.create">
-<code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dscribe/kernels/localsimilaritykernel.html#LocalSimilarityKernel.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dscribe.kernels.localsimilaritykernel.LocalSimilarityKernel.create" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dscribe/kernels/localsimilaritykernel.html#LocalSimilarityKernel.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dscribe.kernels.localsimilaritykernel.LocalSimilarityKernel.create" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates the kernel matrix based on the given lists of local
 features x and y.</p>
 <dl class="field-list simple">
@@ -331,9 +337,9 @@ respectively.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="dscribe.kernels.localsimilaritykernel.LocalSimilarityKernel.get_global_similarity">
-<em class="property">abstract </em><code class="sig-name descname">get_global_similarity</code><span class="sig-paren">(</span><em class="sig-param">localkernel</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dscribe/kernels/localsimilaritykernel.html#LocalSimilarityKernel.get_global_similarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dscribe.kernels.localsimilaritykernel.LocalSimilarityKernel.get_global_similarity" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">get_global_similarity</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">localkernel</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dscribe/kernels/localsimilaritykernel.html#LocalSimilarityKernel.get_global_similarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dscribe.kernels.localsimilaritykernel.LocalSimilarityKernel.get_global_similarity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the global similarity between two structures A and B.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -349,9 +355,9 @@ structures A and B, with N and M atoms respectively.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="dscribe.kernels.localsimilaritykernel.LocalSimilarityKernel.get_pairwise_matrix">
-<code class="sig-name descname">get_pairwise_matrix</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">Y=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dscribe/kernels/localsimilaritykernel.html#LocalSimilarityKernel.get_pairwise_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dscribe.kernels.localsimilaritykernel.LocalSimilarityKernel.get_pairwise_matrix" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_pairwise_matrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">Y</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dscribe/kernels/localsimilaritykernel.html#LocalSimilarityKernel.get_pairwise_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dscribe.kernels.localsimilaritykernel.LocalSimilarityKernel.get_pairwise_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the pairwise similarity of atomic environments with
 scikit-learn, and the pairwise metric configured in the constructor.</p>
 <dl class="field-list simple">
@@ -391,9 +397,9 @@ distributed under the License is distributed on an “AS IS” BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="dscribe.kernels.rematchkernel.REMatchKernel">
-<em class="property">class </em><code class="sig-prename descclassname">dscribe.kernels.rematchkernel.</code><code class="sig-name descname">REMatchKernel</code><span class="sig-paren">(</span><em class="sig-param">alpha=0.1</em>, <em class="sig-param">threshold=1e-06</em>, <em class="sig-param">metric='linear'</em>, <em class="sig-param">gamma=None</em>, <em class="sig-param">degree=3</em>, <em class="sig-param">coef0=1</em>, <em class="sig-param">kernel_params=None</em>, <em class="sig-param">normalize_kernel=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dscribe/kernels/rematchkernel.html#REMatchKernel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dscribe.kernels.rematchkernel.REMatchKernel" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">dscribe.kernels.rematchkernel.</code><code class="sig-name descname">REMatchKernel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">alpha</span><span class="o">=</span><span class="default_value">0.1</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">1e-06</span></em>, <em class="sig-param"><span class="n">metric</span><span class="o">=</span><span class="default_value">'linear'</span></em>, <em class="sig-param"><span class="n">gamma</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">degree</span><span class="o">=</span><span class="default_value">3</span></em>, <em class="sig-param"><span class="n">coef0</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">kernel_params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">normalize_kernel</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dscribe/kernels/rematchkernel.html#REMatchKernel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dscribe.kernels.rematchkernel.REMatchKernel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#dscribe.kernels.localsimilaritykernel.LocalSimilarityKernel" title="dscribe.kernels.localsimilaritykernel.LocalSimilarityKernel"><code class="xref py py-class docutils literal notranslate"><span class="pre">dscribe.kernels.localsimilaritykernel.LocalSimilarityKernel</span></code></a></p>
 <p>Used to compute a global similarity of structures based on the
 regularized-entropy match (REMatch) kernel of local atomic environments in
@@ -441,9 +447,9 @@ kernel element <span class="math notranslate nohighlight">\(K_{ij}\)</span> with
 </ul>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="dscribe.kernels.rematchkernel.REMatchKernel.get_global_similarity">
-<code class="sig-name descname">get_global_similarity</code><span class="sig-paren">(</span><em class="sig-param">localkernel</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dscribe/kernels/rematchkernel.html#REMatchKernel.get_global_similarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dscribe.kernels.rematchkernel.REMatchKernel.get_global_similarity" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_global_similarity</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">localkernel</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dscribe/kernels/rematchkernel.html#REMatchKernel.get_global_similarity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dscribe.kernels.rematchkernel.REMatchKernel.get_global_similarity" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the REMatch similarity between two structures A and B.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -499,11 +505,19 @@ limitations under the License.</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -517,17 +531,12 @@ limitations under the License.</p>
   <div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
     <span class="rst-current-version" data-toggle="rst-current-version">
       <span class="fa fa-book"> Versions</span>
-      v: 0.3.5
+      v: 0.3.x
       <span class="fa fa-caret-down"></span>
     </span>
     <div class="rst-other-versions">
       <dl>
-        <dt>Versions</dt>
-        
-          <dd><a href="https://singroup.github.io/dscribe">0.3.5 (latest stable)</a></dd>
-        
-          <dd><a href="https://singroup.github.io/dscribe/dev">0.3.6a0 (development)</a></dd>
-        
+        <dt id="version-table">Versions</dt>
       </dl>
     </div>
   </div>
