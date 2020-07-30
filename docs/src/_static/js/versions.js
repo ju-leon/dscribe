@@ -2,11 +2,11 @@
 var xhr = new XMLHttpRequest();
 xhr.onreadystatechange = () => {
   let versions = JSON.parse(xhr.responseText).versions;
-  let versionTable = getElementsById("version-table");
+  let versionTable = getElementById("version-table");
   for (let i=0; i < versions.length(); ++i) {
     let version = version[i];
     let dd = document.createElement("dd");
-    let link = document.createElement("");
+    let link = document.createElement("a");
     link.href = `${version.url}`;
     link.textContent = `${version.versionNumber} (${version.description})`;
     dd.appendChild(link);
