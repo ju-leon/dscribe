@@ -66,7 +66,7 @@ ordering of the output vector is as follows:
          for l in range(l_max+1):
             for n in range(n_max):
                for n' in range(n_max):
-                  if (n', Z') >= (n,Z):
+                  if (n', Z') >= (n, Z):
                      append p(\chi)^{Z Z'}_{n n' l}` to output
 
 
@@ -178,8 +178,12 @@ Average output
 ~~~~~~~~~~~~~~
 
 One way of turning a local descriptor into a global descriptor is simply by
-taking the average over all atoms. Since SOAP separates features by atom types,
-this essentially means averaging over atoms of the same type.
+taking the average over all sites. DScribe supports two averaging modes:
+*inner* and *outer*. The inner average is taken over the sites before summing
+up the magnetic quantum number. Outer averaging instead averages over the
+power spectrum of individual sites. In general, the inner averaging will
+preserve the configurational information better but you can experiment with
+both versions.
 
 .. literalinclude:: ../../../examples/soap.py
    :language: python
