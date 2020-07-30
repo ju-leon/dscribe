@@ -9,7 +9,7 @@ xhr.onreadystatechange = () => {
       let dd = document.createElement("dd");
       let link = document.createElement("a");
       link.href = `${version.url}`;
-      link.textContent = `${version.versionNumber} (${version.description})`;
+      link.textContent = `${version.versionNumber} ${version.description}`;
       dd.appendChild(link);
       versionTable.appendChild(dd);
     }
