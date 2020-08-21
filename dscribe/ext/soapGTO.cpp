@@ -73,11 +73,26 @@ inline void getDeltas(double* x, double* y, double* z, const py::array_t<double>
 }
 
 //================================================================
-inline void getRsZs(double* x, double* y, double* z,double* r2,double* r4,double* r6,double* r8,double* z2,double* z4,double* z6,double* z8, int size){
+inline void getRsZs(int lMax, double* x,double* x2,double* x4,double* x6,double* x8,double* x10,double* x12,double* x14,double* x16,double* x18, double* y,double* y2,double* y4,double* y6,double* y8,double* y10,double* y12,double* y14,double* y16,double* y18, double* z,double* r2,double* r3,double* r4,double* r5,double* r6,double* r7,double* r8,double* r9,double* z2,double* z4,double* z6,double* z8,double* z10,double* z12,double* z14,double* z16,double* z18, int size){
   for(int i = 0; i < size; i++){
     r2[i] = x[i]*x[i] + y[i]*y[i] + z[i]*z[i];
     r4[i] = r2[i]*r2[i]; r6[i] = r2[i]*r4[i]; r8[i] = r4[i]*r4[i];
     z2[i] = z[i]*z[i]; z4[i] = z2[i]*z2[i]; z6[i] = z2[i]*z4[i]; z8[i] = z4[i]*z4[i];
+
+ if(lMax > 9){
+    r3[i] = r2[i]*(x[i]*x[i] + y[i]*y[i] + z[i]*z[i]);
+    r5[i] = r2[i]*r3[i];
+    r7[i] = r2[i]*r5[i];
+    r9[i] = r2[i]*r7[i];
+
+    x2[i] = x[i]*x[i]; x4[i] = x2[i]*x2[i]; x6[i] = x2[i]*x4[i]; x8[i] = x4[i]*x4[i];
+    x10[i] = x4[i]*x6[i]; x12[i] = x10[i]*x2[i]; x14[i] = x12[i]*x2[i]; x16[i] = x14[i]*x2[i];x18[i] = x16[i]*x2[i];
+
+    y2[i] = y[i]*y[i]; y4[i] = y2[i]*y2[i]; y6[i] = y2[i]*y4[i]; y8[i] = y4[i]*y4[i];
+    y10[i] = y4[i]*y6[i]; y12[i] = y10[i]*y2[i]; y14[i] = y12[i]*y2[i]; y16[i] = y14[i]*y2[i];y18[i] = y16[i]*y2[i];
+
+    z10[i] = z4[i]*z6[i]; z12[i] = z10[i]*z2[i]; z14[i] = z12[i]*z2[i]; z16[i] = z14[i]*z2[i];z18[i] = z16[i]*z2[i];
+    }
   }
 }
 //================================================================
@@ -88,6 +103,14 @@ void getAlphaBeta(double* aOa, double* bOa, double* alphas, double* betas, int N
   double  oneO1alpha4; double  oneO1alpha5; double  oneO1alpha6;
   double  oneO1alpha7; double  oneO1alpha8; double  oneO1alpha9;
   double  oneO1alpha10;
+  double  oneO1alpha11;
+  double  oneO1alpha12;
+  double  oneO1alpha13;
+  double  oneO1alpha14;
+  double  oneO1alpha15;
+  double  oneO1alpha16;
+  double  oneO1alpha17;
+  double  oneO1alpha18;
   double  oneO1alphaSqrt;// = (double*) malloc(Ns*sizeof(double));
   double  oneO1alphaSqrtX;
 
@@ -167,6 +190,95 @@ void getAlphaBeta(double* aOa, double* bOa, double* alphas, double* betas, int N
       oneO1alpha = 1.0/(1.0 + oOeta*alphas[shift1 + k]); oneO1alphaSqrt = sqrt(oneO1alpha);
       aOa[shift1 + k] = -alphas[shift1 + k]*oneO1alpha; //got alpha_9k
       oneO1alpha10 = pow(oneO1alpha,10); oneO1alphaSqrtX = oneO1alphaSqrt*oneO1alpha10;
+      for(int n = 0; n < Ns; n++){bOa[shift2 + n*Ns + k] = oOeta3O2*betas[shift2 + n*Ns + k]*oneO1alphaSqrtX;} // got beta_9nk
+    }
+  }if(lMax > 9){ // OBS!!! L>9
+    int shift1 = 10*Ns; int shift2 = 10*NsNs;
+    for(int k = 0; k < Ns; k++){
+      oneO1alpha = 1.0/(1.0 + oOeta*alphas[shift1 + k]); oneO1alphaSqrt = sqrt(oneO1alpha);
+      aOa[shift1 + k] = -alphas[shift1 + k]*oneO1alpha; //got alpha_9k
+      oneO1alpha11 = pow(oneO1alpha,11); oneO1alphaSqrtX = oneO1alphaSqrt*oneO1alpha11;
+      for(int n = 0; n < Ns; n++){bOa[shift2 + n*Ns + k] = oOeta3O2*betas[shift2 + n*Ns + k]*oneO1alphaSqrtX;} // got beta_9nk
+    }
+  }
+  if(lMax > 10){
+    int shift1 = 11*Ns; int shift2 = 11*NsNs;
+    for(int k = 0; k < Ns; k++){
+      oneO1alpha = 1.0/(1.0 + oOeta*alphas[shift1 + k]); oneO1alphaSqrt = sqrt(oneO1alpha);
+      aOa[shift1 + k] = -alphas[shift1 + k]*oneO1alpha; //got alpha_9k
+      oneO1alpha12 = pow(oneO1alpha,12); oneO1alphaSqrtX = oneO1alphaSqrt*oneO1alpha12;
+      for(int n = 0; n < Ns; n++){bOa[shift2 + n*Ns + k] = oOeta3O2*betas[shift2 + n*Ns + k]*oneO1alphaSqrtX;} // got beta_9nk
+    }
+  }
+  if(lMax > 11){
+    int shift1 = 12*Ns; int shift2 = 12*NsNs;
+    for(int k = 0; k < Ns; k++){
+      oneO1alpha = 1.0/(1.0 + oOeta*alphas[shift1 + k]); oneO1alphaSqrt = sqrt(oneO1alpha);
+      aOa[shift1 + k] = -alphas[shift1 + k]*oneO1alpha; //got alpha_9k
+      oneO1alpha13 = pow(oneO1alpha,13); oneO1alphaSqrtX = oneO1alphaSqrt*oneO1alpha13;
+      for(int n = 0; n < Ns; n++){bOa[shift2 + n*Ns + k] = oOeta3O2*betas[shift2 + n*Ns + k]*oneO1alphaSqrtX;} // got beta_9nk
+    }
+  }
+  if(lMax > 12){
+    int shift1 = 13*Ns; int shift2 = 13*NsNs;
+    for(int k = 0; k < Ns; k++){
+      oneO1alpha = 1.0/(1.0 + oOeta*alphas[shift1 + k]); oneO1alphaSqrt = sqrt(oneO1alpha);
+      aOa[shift1 + k] = -alphas[shift1 + k]*oneO1alpha; //got alpha_9k
+      oneO1alpha14 = pow(oneO1alpha,14); oneO1alphaSqrtX = oneO1alphaSqrt*oneO1alpha14;
+      for(int n = 0; n < Ns; n++){bOa[shift2 + n*Ns + k] = oOeta3O2*betas[shift2 + n*Ns + k]*oneO1alphaSqrtX;} // got beta_9nk
+    }
+  }
+  if(lMax > 13){
+    int shift1 = 14*Ns; int shift2 = 14*NsNs;
+    for(int k = 0; k < Ns; k++){
+      oneO1alpha = 1.0/(1.0 + oOeta*alphas[shift1 + k]); oneO1alphaSqrt = sqrt(oneO1alpha);
+      aOa[shift1 + k] = -alphas[shift1 + k]*oneO1alpha; //got alpha_9k
+      oneO1alpha15 = pow(oneO1alpha,15); oneO1alphaSqrtX = oneO1alphaSqrt*oneO1alpha15;
+      for(int n = 0; n < Ns; n++){bOa[shift2 + n*Ns + k] = oOeta3O2*betas[shift2 + n*Ns + k]*oneO1alphaSqrtX;} // got beta_9nk
+    }
+  }
+  if(lMax > 14){
+    int shift1 = 15*Ns; int shift2 = 15*NsNs;
+    for(int k = 0; k < Ns; k++){
+      oneO1alpha = 1.0/(1.0 + oOeta*alphas[shift1 + k]); oneO1alphaSqrt = sqrt(oneO1alpha);
+      aOa[shift1 + k] = -alphas[shift1 + k]*oneO1alpha; //got alpha_9k
+      oneO1alpha16 = pow(oneO1alpha,16); oneO1alphaSqrtX = oneO1alphaSqrt*oneO1alpha16;
+      for(int n = 0; n < Ns; n++){bOa[shift2 + n*Ns + k] = oOeta3O2*betas[shift2 + n*Ns + k]*oneO1alphaSqrtX;} // got beta_9nk
+    }
+  }
+  if(lMax > 15){
+    int shift1 = 16*Ns; int shift2 = 16*NsNs;
+    for(int k = 0; k < Ns; k++){
+      oneO1alpha = 1.0/(1.0 + oOeta*alphas[shift1 + k]); oneO1alphaSqrt = sqrt(oneO1alpha);
+      aOa[shift1 + k] = -alphas[shift1 + k]*oneO1alpha; //got alpha_9k
+      oneO1alpha17 = pow(oneO1alpha,17); oneO1alphaSqrtX = oneO1alphaSqrt*oneO1alpha17;
+      for(int n = 0; n < Ns; n++){bOa[shift2 + n*Ns + k] = oOeta3O2*betas[shift2 + n*Ns + k]*oneO1alphaSqrtX;} // got beta_9nk
+    }
+  }
+  if(lMax > 16){
+    int shift1 = 17*Ns; int shift2 = 17*NsNs;
+    for(int k = 0; k < Ns; k++){
+      oneO1alpha = 1.0/(1.0 + oOeta*alphas[shift1 + k]); oneO1alphaSqrt = sqrt(oneO1alpha);
+      aOa[shift1 + k] = -alphas[shift1 + k]*oneO1alpha; //got alpha_9k
+      oneO1alpha18 = pow(oneO1alpha,18); oneO1alphaSqrtX = oneO1alphaSqrt*oneO1alpha18;
+      for(int n = 0; n < Ns; n++){bOa[shift2 + n*Ns + k] = oOeta3O2*betas[shift2 + n*Ns + k]*oneO1alphaSqrtX;} // got beta_9nk
+    }
+  }
+  if(lMax > 17){
+    int shift1 = 18*Ns; int shift2 = 18*NsNs;
+    for(int k = 0; k < Ns; k++){
+      oneO1alpha = 1.0/(1.0 + oOeta*alphas[shift1 + k]); oneO1alphaSqrt = sqrt(oneO1alpha);
+      aOa[shift1 + k] = -alphas[shift1 + k]*oneO1alpha; //got alpha_9k
+      oneO1alpha19 = pow(oneO1alpha,19); oneO1alphaSqrtX = oneO1alphaSqrt*oneO1alpha19;
+      for(int n = 0; n < Ns; n++){bOa[shift2 + n*Ns + k] = oOeta3O2*betas[shift2 + n*Ns + k]*oneO1alphaSqrtX;} // got beta_9nk
+    }
+  }
+  if(lMax > 18){
+    int shift1 = 19*Ns; int shift2 = 19*NsNs;
+    for(int k = 0; k < Ns; k++){
+      oneO1alpha = 1.0/(1.0 + oOeta*alphas[shift1 + k]); oneO1alphaSqrt = sqrt(oneO1alpha);
+      aOa[shift1 + k] = -alphas[shift1 + k]*oneO1alpha; //got alpha_9k
+      oneO1alpha20 = pow(oneO1alpha,20); oneO1alphaSqrtX = oneO1alphaSqrt*oneO1alpha20;
       for(int n = 0; n < Ns; n++){bOa[shift2 + n*Ns + k] = oOeta3O2*betas[shift2 + n*Ns + k]*oneO1alphaSqrtX;} // got beta_9nk
     }
   }
