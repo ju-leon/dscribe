@@ -352,14 +352,37 @@ void getCfactors(double* preCoef, int Asize, double* x, double* y, double* z, do
       /*c99Re*/  preCoef[totalAN*94+i] =      ReIm9[i2  ];
       /*c99Im*/  preCoef[totalAN*95+i] =      ReIm9[i2+1];
     }
+    if (lMax > 9){
+      /**/  preCoef[totalAN*96+i] = ;
+      /**/  preCoef[totalAN*97+i] = ;
+      /**/  preCoef[totalAN*98+i] = ;
+      /**/  preCoef[totalAN*99+i] = ;
+      /**/  preCoef[totalAN*100+i] = ;
+      /**/  preCoef[totalAN*101+i] = ;
+      /**/  preCoef[totalAN*102+i] = ;
+      /**/  preCoef[totalAN*103+i] = ;
+      /**/  preCoef[totalAN*104+i] = ;
+      /**/  preCoef[totalAN*105+i] = ;
+      /**/  preCoef[totalAN*106+i] = ;
+      /**/  preCoef[totalAN*107+i] = ;
+      /**/  preCoef[totalAN*108+i] = ;
+      /**/  preCoef[totalAN*109+i] = ;
+      /**/  preCoef[totalAN*110+i] = ;
+      /**/  preCoef[totalAN*111+i] = ;
+      /**/  preCoef[totalAN*112+i] = ;
+      /**/  preCoef[totalAN*113+i] = ;
+      /**/  preCoef[totalAN*114+i] = ;
+      /**/  preCoef[totalAN*115+i] = ;
+      /**/  preCoef[totalAN*116+i] = ;
+    }
   }
 }
 //================================================================
 void getC(double* C, double* preCoef, double* x, double* y, double* z,double* r2, double* bOa, double* aOa, double* exes,  int totalAN, int Asize, int Ns, int Ntypes, int lMax, int posI, int typeJ){
 
   if(Asize == 0){return;}
-  double sumMe = 0; int NsNs = Ns*Ns;  int NsJ = 100*Ns*typeJ; int LNsNs;
-  int LNs; int NsTsI = 100*Ns*Ntypes*posI;
+  double sumMe = 0; int NsNs = Ns*Ns;  int NsJ = ((lMax+1)*(lMax+1))*Ns*typeJ; int LNsNs;
+  int LNs; int NsTsI = ((lMax+1)*(lMax+1))*Ns*Ntypes*posI;
   for(int k = 0; k < Ns; k++){
     sumMe = 0; for(int i = 0; i < Asize; i++){ sumMe += exp(aOa[k]*r2[i]);}
     for(int n = 0; n < Ns; n++){ C[NsTsI + NsJ + n] += bOa[n*Ns + k]*sumMe; }
@@ -548,7 +571,8 @@ void getC(double* C, double* preCoef, double* x, double* y, double* z,double* r2
     for(int n = 0; n < Ns; n++){C[NsTsI + NsJ + Ns*79 + n] += bOa[LNsNs + n*Ns + k]*sumMe;}
     sumMe = 0;/*c88Im*/ for(int i = 0; i < Asize; i++){sumMe += exes[i]*(preCoef[totalAN*76+i]);}
     for(int n = 0; n < Ns; n++){C[NsTsI + NsJ + Ns*80 + n] += bOa[LNsNs + n*Ns + k]*sumMe;}
-  }} if(lMax > 8) { LNsNs=9*NsNs; LNs=9*Ns;
+  }}
+  if(lMax > 8) { LNsNs=9*NsNs; LNs=9*Ns;
   for(int k = 0; k < Ns; k++){
     for(int i = 0; i < Asize; i++){exes[i] = exp(aOa[LNs + k]*r2[i]);}//exponents
     sumMe = 0;/*c90*/ for(int i = 0; i < Asize; i++){sumMe += exes[i]*(preCoef[totalAN*77+i]);}
@@ -590,14 +614,24 @@ void getC(double* C, double* preCoef, double* x, double* y, double* z,double* r2
     sumMe = 0;/*c99Im*/ for(int i = 0; i < Asize; i++){sumMe += exes[i]*(preCoef[totalAN*95+i]);}
     for(int n = 0; n < Ns; n++){C[NsTsI + NsJ + Ns*99 + n] += bOa[LNsNs + n*Ns + k]*sumMe;}
   }}
+//  double shiftBuffer = 96;
+  if(lMax > 9) { LNsNs=10*NsNs; LNs=10*Ns; // OBS!!!!!! lMax > 9 Case!
+  for(int k = 0; k < Ns; k++){
+    for(int i = 0; i < Asize; i++){exes[i] = exp(aOa[LNs + k]*r2[i]);}//exponents
+      for(double sumems = 100, sumems < 121, sumems++){
+        sumMe = 0; for(int i = 0; i < Asize; i++){sumMe += exes[i]*(preCoef[totalAN*(sumems - 4)+i]);}
+        for(int n = 0; n < Ns; n++){C[NsTsI + NsJ + Ns*sumems + n] += bOa[LNsNs + n*Ns + k]*sumMe;}
+	//shiftBuffer++; WRONG LOGIC, but not in use anyway ( not considering k++)
+      }
+  }}
 }
 //=======================================================================
 /**
  * Used to calculate the partial power spectrum without crossover.
  */
 void getPNoCross(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMax){
-  int NsTs100 = Ns*Ts*100;
-  int Ns100 = Ns*100;
+  int NsTs100 = Ns*Ts*((lMax+1)*(lMax+1)); // Used to be NsTs100 = Ns*Ts*100, but 100 is a waste of memory if not lMax = 9, and can't do over that, so changed.
+  int Ns100 = Ns*((lMax+1)*(lMax+1));
   int NsNs = (Ns*(Ns+1))/2;
   int NsNsLmax = NsNs*(lMax+1);
   int NsNsLmaxTs = NsNsLmax*Ts;
@@ -641,7 +675,7 @@ void getPNoCross(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMax
   double cs45=0.0028613660; double cs46=0.1287614710; double cs47=11.3310094474;
   double cs48=6.6097555108; double cs49=515.5609298206; double cs50=7.3651561406;
   double cs51=49.1010409380; double cs52=9.2064451758; double cs53=313.0191359728;
-  double cs54=17.3899519988;
+  double cs54=17.3899519988; // constants only up to lMax = 9. After that, it is switched to tesseral, so no need.
 
   // The power spectrum is multiplied by an l-dependent prefactor that comes
   // from the normalization of the Wigner D matrices. This prefactor is
@@ -880,14 +914,32 @@ void getPNoCross(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMax
       }
     }
   }
+  double buffDouble = 0;
+  } if (lMax > 9) { // OBS!!!! LMAX > 9 ------
+    double prel9 = PI*sqrt(8.0/(2.0*10.0+1.0));
+    for(int i = 0; i < Hs; i++){
+      for(int j = 0; j < Ts; j++){
+        shiftN = 0;
+        for(int k = 0; k < Ns; k++){
+          for(int kd = k; kd < Ns; kd++){
+            for(int buffShift = 100, buffShift < 121, buffShift++){
+              buffDouble += Cnnd[NsTs100*i + Ns100*j + buffDouble*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffDouble*Ns + kd];
+	    }
+            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 10*NsNs + shiftN] = prel9*buffDouble;
+            shiftN++;
+          }
+        }
+      }
+    }
+  }
 }
 //=======================================================================
 /**
  * Used to calculate the partial power spectrum.
  */
 void getPCrossOver(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMax){
-  int NsTs100 = Ns*Ts*100;
-  int Ns100 = Ns*100;
+  int NsTs100 = Ns*Ts*((lMax+1)*(lMax+1));
+  int Ns100 = Ns*((lMax+1)*(lMax+1));
   int NsNs = (Ns*(Ns+1))/2;
   int NsNsLmax = NsNs*(lMax+1) ;
   int NsNsLmaxTs = NsNsLmax*getCrosNum(Ts);
@@ -1251,8 +1303,8 @@ void soapGTO(py::array_t<double> cArr, py::array_t<double> positions, py::array_
   double* aOa = (double*) malloc((lMax+1)*Ns*sizeof(double));
 
 
-  double* cnnd = (double*) malloc(100*Nt*Ns*Hs*sizeof(double));
-  for(int i = 0; i < 100*Nt*Ns*Hs; i++){cnnd[i] = 0.0;}
+  double* cnnd = (double*) malloc(((lMax+1)*(lMax+1))*Nt*Ns*Hs*sizeof(double));
+  for(int i = 0; i < ((lMax+1)*(lMax+1))*Nt*Ns*Hs; i++){cnnd[i] = 0.0;}
 
   // Initialize binning
   CellList cellList(positions, rCut+cutoffPadding);
