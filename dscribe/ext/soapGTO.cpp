@@ -255,11 +255,13 @@ void getCfactors(double* preCoef, int Asize, double* x,double* x2, double* x4, d
       c96c=17*z2[i]-3*r2[i];
       c97c=17*z2[i]-r2[i];
     }
-    /*c20  */  preCoef[        +i] = c20c;
-    /*c21Re*/  preCoef[totalAN+i] = z[i]*x[i];
-    /*c21Im*/  preCoef[totalAN*2+i] = z[i]*y[i];
-    /*c22Re*/  preCoef[totalAN*3+i] =      ReIm2[2*i];
-    /*c22Im*/  preCoef[totalAN*4+i] =      ReIm2[i2+1];
+    if (lMax > 1){
+      /*c20  */  preCoef[        +i] = c20c;
+      /*c21Re*/  preCoef[totalAN+i] = z[i]*x[i];
+      /*c21Im*/  preCoef[totalAN*2+i] = z[i]*y[i];
+      /*c22Re*/  preCoef[totalAN*3+i] =      ReIm2[2*i];
+      /*c22Im*/  preCoef[totalAN*4+i] =      ReIm2[i2+1];
+    }
     if (lMax > 2){
       /*c30  */  preCoef[totalAN*5+i] = c30c*z[i];
       /*c31Re*/  preCoef[totalAN*6+i] =       x[i]*c31c;
@@ -711,7 +713,7 @@ void getPNoCross(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMax
         }
       }
     }
-  } if (lMax > 0) {
+  } if(lMax > 0) {
     double prel1 = PI*sqrt(8.0/(2.0*1.0+1.0));
     for(int i = 0; i < Hs; i++){
       for(int j = 0; j < Ts; j++){
@@ -727,7 +729,7 @@ void getPNoCross(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMax
         }
       }
     }
-  } if (lMax > 1) {
+  } if(lMax > 1) {
     double prel2 = PI*sqrt(8.0/(2.0*2.0+1.0));
     for(int i = 0; i < Hs; i++){
       for(int j = 0; j < Ts; j++){
@@ -745,7 +747,7 @@ void getPNoCross(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMax
         }
       }
     }
-  } if (lMax > 2) {
+  } if(lMax > 2) {
     double prel3 = PI*sqrt(8.0/(2.0*3.0+1.0));
     for(int i = 0; i < Hs; i++){
       for(int j = 0; j < Ts; j++){
@@ -765,7 +767,7 @@ void getPNoCross(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMax
         }
       }
     }
-  } if (lMax > 3) {
+  } if(lMax > 3) {
     double prel4 = PI*sqrt(8.0/(2.0*4.0+1.0));
     for(int i = 0; i < Hs; i++){
       for(int j = 0; j < Ts; j++){
@@ -811,7 +813,7 @@ void getPNoCross(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMax
         }
       }
     }
-  } if (lMax > 5) {
+  } if(lMax > 5) {
     double prel6 = PI*sqrt(8.0/(2.0*6.0+1.0));
     for(int i = 0; i < Hs; i++){
       for(int j = 0; j < Ts; j++){
@@ -837,7 +839,7 @@ void getPNoCross(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMax
         }
       }
     }
-  } if (lMax > 6) {
+  } if(lMax > 6) {
     double prel7 = PI*sqrt(8.0/(2.0*7.0+1.0));
     for(int i = 0; i < Hs; i++){
       for(int j = 0; j < Ts; j++){
@@ -865,7 +867,7 @@ void getPNoCross(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMax
         }
       }
     }
-  } if (lMax > 7) {
+  } if(lMax > 7) {
     double prel8 = PI*sqrt(8.0/(2.0*8.0+1.0));
     for(int i = 0; i < Hs; i++){
       for(int j = 0; j < Ts; j++){
@@ -895,7 +897,7 @@ void getPNoCross(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMax
         }
       }
     }
-  } if (lMax > 8) {
+  } if(lMax > 8) {
     double prel9 = PI*sqrt(8.0/(2.0*9.0+1.0));
     for(int i = 0; i < Hs; i++){
       for(int j = 0; j < Ts; j++){
@@ -928,8 +930,8 @@ void getPNoCross(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMax
       }
     }
   }
-   if (lMax > 9) { // OBS!!!! LMAX > 9 ------
-    double prel9 = PI*sqrt(8.0/(2.0*10.0+1.0));
+   if(lMax > 9) { // OBS!!!! LMAX > 9 ------
+    double prel10 = PI*sqrt(8.0/(2.0*10.0+1.0));
     for(int i = 0; i < Hs; i++){
       for(int j = 0; j < Ts; j++){
         shiftN = 0;
@@ -939,7 +941,7 @@ void getPNoCross(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMax
             for(int buffShift = 100; buffShift < 121; buffShift++){
               buffDouble += Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
 	    }
-            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 10*NsNs + shiftN] = prel9*buffDouble;
+            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 10*NsNs + shiftN] = prel10*buffDouble;
             shiftN++;
           }
         }
