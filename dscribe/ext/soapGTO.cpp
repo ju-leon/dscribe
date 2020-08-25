@@ -77,9 +77,9 @@ inline void getRsZs(double* x,double* x2,double* x4,double* x6,double* x8,double
   for(int i = 0; i < size; i++){
     r2[i] = x[i]*x[i] + y[i]*y[i] + z[i]*z[i];
     r4[i] = r2[i]*r2[i]; r6[i] = r2[i]*r4[i]; r8[i] = r4[i]*r4[i]; r10[i] = r6[i]*r4[i];
-    x2[i] = x[i]*x[i]; x4[i] = x2[i]*x2[i]; x6[i] = x2[i]*x4[i]; x8[i] = x4[i]*x4[i];x8[i] = x6[i]*x4[i];
-    y2[i] = y[i]*y[i]; y4[i] = y2[i]*y2[i]; y6[i] = y2[i]*y4[i]; y8[i] = y4[i]*y4[i];y8[i] = y6[i]*y4[i];
-    z2[i] = z[i]*z[i]; z4[i] = z2[i]*z2[i]; z6[i] = z2[i]*z4[i]; z8[i] = z4[i]*z4[i];z8[i] = z6[i]*z4[i];
+    x2[i] = x[i]*x[i]; x4[i] = x2[i]*x2[i]; x6[i] = x2[i]*x4[i]; x8[i] = x4[i]*x4[i];x10[i] = x6[i]*x4[i];
+    y2[i] = y[i]*y[i]; y4[i] = y2[i]*y2[i]; y6[i] = y2[i]*y4[i]; y8[i] = y4[i]*y4[i];y10[i] = y6[i]*y4[i];
+    z2[i] = z[i]*z[i]; z4[i] = z2[i]*z2[i]; z6[i] = z2[i]*z4[i]; z8[i] = z4[i]*z4[i];z10[i] = z6[i]*z4[i];
   }
 }
 //================================================================
@@ -632,7 +632,7 @@ void getC(double* C, double* preCoef, double* x, double* y, double* z,double* r2
   if(lMax > 9) { LNsNs=10*NsNs; LNs=10*Ns; // OBS!!!!!! lMax > 9 Case!
   for(int k = 0; k < Ns; k++){
     for(int i = 0; i < Asize; i++){exes[i] = exp(aOa[LNs + k]*r2[i]);}//exponents
-      for(int sumems = 100; sumems < 122; sumems++){
+      for(int sumems = 100; sumems < 121; sumems++){
         sumMe = 0; for(int i = 0; i < Asize; i++){sumMe += exes[i]*(preCoef[totalAN*(sumems - 4)+i]);}
         for(int n = 0; n < Ns; n++){C[NsTsI + NsJ + Ns*sumems + n] += bOa[LNsNs + n*Ns + k]*sumMe;}
 	//shiftBuffer++; WRONG LOGIC, but not in use anyway ( not considering k++)
@@ -936,7 +936,7 @@ void getPNoCross(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMax
         for(int k = 0; k < Ns; k++){
           for(int kd = k; kd < Ns; kd++){
             double buffDouble = 0;
-            for(int buffShift = 100; buffShift < 122; buffShift++){
+            for(int buffShift = 100; buffShift < 121; buffShift++){
               buffDouble += Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
 	    }
             soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 10*NsNs + shiftN] = prel9*buffDouble;
@@ -1286,7 +1286,7 @@ void getPCrossOver(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lM
         for(int k = 0; k < Ns; k++){
           for(int kd = k; kd < Ns; kd++){
             double buffDouble = 0;
-            for(int buffShift = 100; buffShift < 122; buffShift++){
+            for(int buffShift = 100; buffShift < 121; buffShift++){
               buffDouble += Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
 	    }
             soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 10*NsNs + shiftN] = prel9*buffDouble;
