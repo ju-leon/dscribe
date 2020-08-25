@@ -632,7 +632,7 @@ void getC(double* C, double* preCoef, double* x, double* y, double* z,double* r2
   if(lMax > 9) { LNsNs=10*NsNs; LNs=10*Ns; // OBS!!!!!! lMax > 9 Case!
   for(int k = 0; k < Ns; k++){
     for(int i = 0; i < Asize; i++){exes[i] = exp(aOa[LNs + k]*r2[i]);}//exponents
-      for(double sumems = 100, sumems < 121, sumems++){
+      for(int sumems = 100; sumems < 122; sumems++){
         sumMe = 0; for(int i = 0; i < Asize; i++){sumMe += exes[i]*(preCoef[totalAN*(sumems - 4)+i]);}
         for(int n = 0; n < Ns; n++){C[NsTsI + NsJ + Ns*sumems + n] += bOa[LNsNs + n*Ns + k]*sumMe;}
 	//shiftBuffer++; WRONG LOGIC, but not in use anyway ( not considering k++)
@@ -928,16 +928,16 @@ void getPNoCross(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMax
       }
     }
   }
-  double buffDouble = 0;
-  } if (lMax > 9) { // OBS!!!! LMAX > 9 ------
+   if (lMax > 9) { // OBS!!!! LMAX > 9 ------
     double prel9 = PI*sqrt(8.0/(2.0*10.0+1.0));
     for(int i = 0; i < Hs; i++){
       for(int j = 0; j < Ts; j++){
         shiftN = 0;
         for(int k = 0; k < Ns; k++){
           for(int kd = k; kd < Ns; kd++){
-            for(int buffShift = 100, buffShift < 121, buffShift++){
-              buffDouble += Cnnd[NsTs100*i + Ns100*j + buffDouble*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffDouble*Ns + kd];
+            double buffDouble = 0;
+            for(int buffShift = 100; buffShift < 122; buffShift++){
+              buffDouble += Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
 	    }
             soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 10*NsNs + shiftN] = prel9*buffDouble;
             shiftN++;
@@ -945,7 +945,7 @@ void getPNoCross(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMax
         }
       }
     }
-  }
+  } // Correct logic? buffDouble?
 }
 //=======================================================================
 /**
@@ -1277,6 +1277,25 @@ void getPCrossOver(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lM
       }
     }
   }
+
+   if (lMax > 9) { // OBS!!!! LMAX > 9 ------
+    double prel9 = PI*sqrt(8.0/(2.0*10.0+1.0));
+    for(int i = 0; i < Hs; i++){
+      for(int j = 0; j < Ts; j++){
+        shiftN = 0;
+        for(int k = 0; k < Ns; k++){
+          for(int kd = k; kd < Ns; kd++){
+            double buffDouble = 0;
+            for(int buffShift = 100; buffShift < 122; buffShift++){
+              buffDouble += Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
+	    }
+            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 10*NsNs + shiftN] = prel9*buffDouble;
+            shiftN++;
+          }
+        }
+      }
+    }
+  } // Correct logic? buffDouble?
 }
 
 //===========================================================================================
@@ -1324,7 +1343,7 @@ void soapGTO(py::array_t<double> cArr, py::array_t<double> positions, py::array_
   double* ReIm8 = (double*) malloc(2*sizeof(double)*totalAN);// 2 -> Re + ixIm
   double* ReIm9 = (double*) malloc(2*sizeof(double)*totalAN);// 2 -> Re + ixIm
   double* exes = (double*) malloc (sizeof(double)*totalAN);
-  double* preCoef = (double*) malloc(96*sizeof(double)*totalAN);
+  double* preCoef = (double*) malloc(((lMax + 1)*(lMax + 1) - 4)*sizeof(double)*totalAN);
   double* bOa = (double*) malloc((lMax+1)*NsNs*sizeof(double));
   double* aOa = (double*) malloc((lMax+1)*Ns*sizeof(double));
 
@@ -1383,16 +1402,28 @@ void soapGTO(py::array_t<double> cArr, py::array_t<double> positions, py::array_
   }
 
   free(dx);
+  free(x2);
+  free(x4);
+  free(x6);
+  free(x8);
+  free(x10);
   free(dy);
+  free(y2);
+  free(y4);
+  free(y6);
+  free(y8);
+  free(y10);
   free(dz);
   free(z2);
   free(z4);
   free(z6);
   free(z8);
+  free(z10);
   free(r2);
   free(r4);
   free(r6);
   free(r8);
+  free(r10);
   free(ReIm2);
   free(ReIm3);
   free(ReIm4);
@@ -1412,6 +1443,6 @@ void soapGTO(py::array_t<double> cArr, py::array_t<double> positions, py::array_
     getPNoCross(c, cnnd, Ns, Nt, Hs, lMax);
   };
   free(cnnd);
-
+ 
   return;
 }
