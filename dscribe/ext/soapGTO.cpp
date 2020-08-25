@@ -73,11 +73,13 @@ inline void getDeltas(double* x, double* y, double* z, const py::array_t<double>
 }
 
 //================================================================
-inline void getRsZs(double* x, double* y, double* z,double* r2,double* r4,double* r6,double* r8,double* z2,double* z4,double* z6,double* z8, int size){
+inline void getRsZs(double* x,double* x2,double* x4,double* x6,double* x8,double* x10, double* y,double* y2,double* y4,double* y6,double* y8,double* y10, double* z,double* r2,double* r4,double* r6,double* r8,double* r10,double* z2,double* z4,double* z6,double* z8,double* z10, int size){
   for(int i = 0; i < size; i++){
     r2[i] = x[i]*x[i] + y[i]*y[i] + z[i]*z[i];
-    r4[i] = r2[i]*r2[i]; r6[i] = r2[i]*r4[i]; r8[i] = r4[i]*r4[i];
-    z2[i] = z[i]*z[i]; z4[i] = z2[i]*z2[i]; z6[i] = z2[i]*z4[i]; z8[i] = z4[i]*z4[i];
+    r4[i] = r2[i]*r2[i]; r6[i] = r2[i]*r4[i]; r8[i] = r4[i]*r4[i]; r10[i] = r6[i]*r4[i];
+    x2[i] = x[i]*x[i]; x4[i] = x2[i]*x2[i]; x6[i] = x2[i]*x4[i]; x8[i] = x4[i]*x4[i];x8[i] = x6[i]*x4[i];
+    y2[i] = y[i]*y[i]; y4[i] = y2[i]*y2[i]; y6[i] = y2[i]*y4[i]; y8[i] = y4[i]*y4[i];y8[i] = y6[i]*y4[i];
+    z2[i] = z[i]*z[i]; z4[i] = z2[i]*z2[i]; z6[i] = z2[i]*z4[i]; z8[i] = z4[i]*z4[i];z8[i] = z6[i]*z4[i];
   }
 }
 //================================================================
@@ -88,6 +90,7 @@ void getAlphaBeta(double* aOa, double* bOa, double* alphas, double* betas, int N
   double  oneO1alpha4; double  oneO1alpha5; double  oneO1alpha6;
   double  oneO1alpha7; double  oneO1alpha8; double  oneO1alpha9;
   double  oneO1alpha10;
+  double  oneO1alpha11;
   double  oneO1alphaSqrt;// = (double*) malloc(Ns*sizeof(double));
   double  oneO1alphaSqrtX;
 
@@ -161,7 +164,8 @@ void getAlphaBeta(double* aOa, double* bOa, double* alphas, double* betas, int N
       oneO1alpha9 = pow(oneO1alpha,9); oneO1alphaSqrtX = oneO1alphaSqrt*oneO1alpha9;
       for(int n = 0; n < Ns; n++){bOa[shift2 + n*Ns + k] = oOeta3O2*betas[shift2 + n*Ns + k]*oneO1alphaSqrtX;} // got beta_8nk
     }
-  }if(lMax > 8){
+  }
+  if(lMax > 8){
     int shift1 = 9*Ns; int shift2 = 9*NsNs;
     for(int k = 0; k < Ns; k++){
       oneO1alpha = 1.0/(1.0 + oOeta*alphas[shift1 + k]); oneO1alphaSqrt = sqrt(oneO1alpha);
@@ -170,9 +174,18 @@ void getAlphaBeta(double* aOa, double* bOa, double* alphas, double* betas, int N
       for(int n = 0; n < Ns; n++){bOa[shift2 + n*Ns + k] = oOeta3O2*betas[shift2 + n*Ns + k]*oneO1alphaSqrtX;} // got beta_9nk
     }
   }
+  if(lMax > 9){ //OBS!!!!! lMax > 9
+    int shift1 = 10*Ns; int shift2 = 10*NsNs;
+    for(int k = 0; k < Ns; k++){
+      oneO1alpha = 1.0/(1.0 + oOeta*alphas[shift1 + k]); oneO1alphaSqrt = sqrt(oneO1alpha);
+      aOa[shift1 + k] = -alphas[shift1 + k]*oneO1alpha; //got alpha_9k
+      oneO1alpha11 = pow(oneO1alpha,11); oneO1alphaSqrtX = oneO1alphaSqrt*oneO1alpha11;
+      for(int n = 0; n < Ns; n++){bOa[shift2 + n*Ns + k] = oOeta3O2*betas[shift2 + n*Ns + k]*oneO1alphaSqrtX;} // got beta_9nk
+    }
+  }
 }
 //================================================================
-void getCfactors(double* preCoef, int Asize, double* x, double* y, double* z, double* z2, double* z4, double* z6, double* z8, double* r2, double* r4, double* r6, double* r8, double* ReIm2, double* ReIm3, double* ReIm4, double* ReIm5, double* ReIm6, double* ReIm7, double* ReIm8, double* ReIm9,int totalAN, int lMax){
+void getCfactors(double* preCoef, int Asize, double* x,double* x2, double* x4, double* x6, double* x8, double* x10, double* y,double* y2, double* y4, double* y6, double* y8, double* y10, double* z, double* z2, double* z4, double* z6, double* z8, double* z10, double* r2, double* r4, double* r6, double* r8,double* r10, double* ReIm2, double* ReIm3, double* ReIm4, double* ReIm5, double* ReIm6, double* ReIm7, double* ReIm8, double* ReIm9,int totalAN, int lMax){
   double c20c;double c30c;double c31c;double c40c;double c41c;double c42c;
   double c50c;double c51c;double c52c;double c53c;double c60c;double c61c;
   double c62c;double c63c;double c64c;double c70c;double c71c;double c72c;
@@ -353,27 +366,28 @@ void getCfactors(double* preCoef, int Asize, double* x, double* y, double* z, do
       /*c99Im*/  preCoef[totalAN*95+i] =      ReIm9[i2+1];
     }
     if (lMax > 9){
-      /**/  preCoef[totalAN*96+i] = ;
-      /**/  preCoef[totalAN*97+i] = ;
-      /**/  preCoef[totalAN*98+i] = ;
-      /**/  preCoef[totalAN*99+i] = ;
-      /**/  preCoef[totalAN*100+i] = ;
-      /**/  preCoef[totalAN*101+i] = ;
-      /**/  preCoef[totalAN*102+i] = ;
-      /**/  preCoef[totalAN*103+i] = ;
-      /**/  preCoef[totalAN*104+i] = ;
-      /**/  preCoef[totalAN*105+i] = ;
-      /**/  preCoef[totalAN*106+i] = ;
-      /**/  preCoef[totalAN*107+i] = ;
-      /**/  preCoef[totalAN*108+i] = ;
-      /**/  preCoef[totalAN*109+i] = ;
-      /**/  preCoef[totalAN*110+i] = ;
-      /**/  preCoef[totalAN*111+i] = ;
-      /**/  preCoef[totalAN*112+i] = ;
-      /**/  preCoef[totalAN*113+i] = ;
-      /**/  preCoef[totalAN*114+i] = ;
-      /**/  preCoef[totalAN*115+i] = ;
-      /**/  preCoef[totalAN*116+i] = ;
+      /**/  preCoef[totalAN*96+i] = 1.53479023644398*x[i]*y[i]*(5.0*x8[i] - 60.0*x6[i]*y2[i] + 126.0*x4[i]*y4[i] - 60.0*x2[i]*y6[i] + 5.0*y8[i]);
+      /**/  preCoef[totalAN*97+i] = 3.43189529989171*y[i]*z[i]*(9.0*x8[i] - 84.0*x6[i]*y2[i] + 126.0*x4[i]*y4[i] - 36.0*x2[i]*y6[i] + y8[i]);
+      /**/  preCoef[totalAN*98+i] = -4.45381546176335*x[i]*y[i]*(x2[i] + y2[i] - 18.0*z2[i])*(x6[i] - 7.0*x4[i]*y2[i] + 7.0*x2[i]*y4[i] - y6[i]);
+      /**/  preCoef[totalAN*99+i] = 1.36369691122981*y[i]*z[i]*(-3.0*x2[i] - 3.0*y2[i] + 16.0*z2[i])*(7.0*x6[i] - 35.0*x4[i]*y2[i] + 21.0*x2[i]*y4[i] - y6[i]);
+      /**/  preCoef[totalAN*100+i] = 0.330745082725238*x[i]*y[i]*(3.0*x4[i] - 10.0*x2[i]*y2[i] + 3.0*y4[i])*(323.0*z4[i] - 102.0*z2[i]*r2[i] + 3.0*r4[i]);
+      /**/  preCoef[totalAN*101+i] = 0.295827395278969*y[i]*z[i]*(5.0*x4[i] - 10.0*x2[i]*y2[i] + y4[i])*(323.0*z4[i] - 170.0*z2[i]*r2[i] + 15.0*r4[i]);
+      /**/  preCoef[totalAN*102+i] = 1.87097672671297*x[i]*y[i]*(x2[i] - y2[i])*(323.0*z6[i] - 255.0*z4[i]*r2[i] + 45.0*z2[i]*r4[i] - r6[i]);
+      /**/  preCoef[totalAN*103+i] = 0.661490165450475*y[i]*z[i]*(3.0*x2[i] - y2[i])*(323.0*z6[i] - 357.0*z4[i]*r2[i] + 105.0*z2[i]*r4[i] - 7.0*r6[i]);
+      /**/  preCoef[totalAN*104+i] = 0.129728894680065*x[i]*y[i]*(4199.0*z8[i] - 6188.0*z6[i]*r2[i] + 2730.0*z4[i]*r4[i] - 364.0*z2[i]*r6[i] + 7.0*r8[i]);
+      /**/  preCoef[totalAN*105+i] = 0.0748990122652082*y[i]*z[i]*(4199.0*z8[i] - 7956.0*z6[i]*r2[i] + 4914.0*z4[i]*r4[i] - 1092.0*z2[i]*r6[i] + 63.0*r8[i]);
+      /**/  preCoef[totalAN*106+i] = 233.240148813258*z10[i] - 552.410878768242*z8[i]*r2[i] + 454.926606044435*z6[i]*r4[i] - 151.642202014812*z4[i]*r6[i] + 17.4971771555552*z2[i]*r8[i] - 0.318130493737367*r10[i];
+      /**/  preCoef[totalAN*107+i] = 0.0748990122652082*x[i]*z[i]*(4199.0*z8[i] - 7956.0*z6[i]*r2[i] + 4914.0*z4[i]*r4[i] - 1092.0*z2[i]*r6[i] + 63.0*r8[i]);
+      /**/  preCoef[totalAN*108+i] = 0.0648644473400325*(x2[i] - y2[i])*(4199.0*z8[i] - 6188.0*z6[i]*r2[i] + 2730.0*z4[i]*r4[i] - 364.0*z2[i]*r6[i] + 7.0*r8[i]);
+      /**/  preCoef[totalAN*109+i] = 0.661490165450475*x[i]*z[i]*(x2[i] - 3.0*y2[i])*(323.0*z6[i] - 357.0*z4[i]*r2[i] + 105.0*z2[i]*r4[i] - 7.0*r6[i]);
+      /**/  preCoef[totalAN*110+i] = 0.467744181678242*(x4[i] - 6.0*x2[i]*y2[i] + y4[i])*(323.0*z6[i] - 255.0*z4[i]*r2[i] + 45.0*z2[i]*r4[i] - r6[i]);
+      /**/  preCoef[totalAN*111+i] = 0.295827395278969*x[i]*z[i]*(x4[i] - 10.0*x2[i]*y2[i] + 5.0*y4[i])*(323.0*z4[i] - 170.0*z2[i]*r2[i] + 15.0*r4[i]);
+      /**/  preCoef[totalAN*112+i] = 0.165372541362619*(323.0*z4[i] - 102.0*z2[i]*r2[i] + 3.0*r4[i])*(x6[i] - 15.0*x4[i]*y2[i] + 15.0*x2[i]*y4[i] - y6[i]);
+      /**/  preCoef[totalAN*113+i] = 1.36369691122981*x[i]*z[i]*(-3.0*x2[i] - 3.0*y2[i] + 16.0*z2[i])*(x6[i] - 21.0*x4[i]*y2[i] + 35.0*x2[i]*y4[i] - 7.0*y6[i]);
+      /**/  preCoef[totalAN*114+i] = -0.556726932720418*(x2[i] + y2[i] - 18.0*z2[i])*(x8[i] - 28.0*x6[i]*y2[i] + 70.0*x4[i]*y4[i] - 28.0*x2[i]*y6[i] + y8[i]);
+      /**/  preCoef[totalAN*115+i] = 3.43189529989171*x[i]*z[i]*(x8[i] - 36.0*x6[i]*y2[i] + 126.0*x4[i]*y4[i] - 84.0*x2[i]*y6[i] + 9.0*y8[i]);
+      /**/  preCoef[totalAN*116+i] = 0.76739511822199*x10[i] - 34.5327803199895*x8[i]*y2[i] + 161.152974826618*x6[i]*y4[i] - 161.152974826618*x4[i]*y6[i] + 34.5327803199895*x2[i]*y8[i] - 0.76739511822199*y10[i];
+
     }
   }
 }
@@ -1281,14 +1295,26 @@ void soapGTO(py::array_t<double> cArr, py::array_t<double> positions, py::array_
   double* dx  = (double*) malloc(sizeof(double)*totalAN);
   double* dy  = (double*) malloc(sizeof(double)*totalAN);
   double* dz  = (double*) malloc(sizeof(double)*totalAN);
+  double* x2 = (double*) malloc(sizeof(double)*totalAN);
+  double* x4 = (double*) malloc(sizeof(double)*totalAN);
+  double* x6 = (double*) malloc(sizeof(double)*totalAN);
+  double* x8 = (double*) malloc(sizeof(double)*totalAN);
+  double* x10 = (double*) malloc(sizeof(double)*totalAN);
+  double* y2 = (double*) malloc(sizeof(double)*totalAN);
+  double* y4 = (double*) malloc(sizeof(double)*totalAN);
+  double* y6 = (double*) malloc(sizeof(double)*totalAN);
+  double* y8 = (double*) malloc(sizeof(double)*totalAN);
+  double* y10 = (double*) malloc(sizeof(double)*totalAN);
   double* z2 = (double*) malloc(sizeof(double)*totalAN);
   double* z4 = (double*) malloc(sizeof(double)*totalAN);
   double* z6 = (double*) malloc(sizeof(double)*totalAN);
   double* z8 = (double*) malloc(sizeof(double)*totalAN);
+  double* z10 = (double*) malloc(sizeof(double)*totalAN);
   double* r2 = (double*) malloc(sizeof(double)*totalAN);
   double* r4 = (double*) malloc(sizeof(double)*totalAN);
   double* r6 = (double*) malloc(sizeof(double)*totalAN);
   double* r8 = (double*) malloc(sizeof(double)*totalAN);
+  double* r10 = (double*) malloc(sizeof(double)*totalAN);
   double* ReIm2 = (double*) malloc(2*sizeof(double)*totalAN);// 2 -> Re + ixIm
   double* ReIm3 = (double*) malloc(2*sizeof(double)*totalAN);// 2 -> Re + ixIm
   double* ReIm4 = (double*) malloc(2*sizeof(double)*totalAN);// 2 -> Re + ixIm
@@ -1350,8 +1376,8 @@ void soapGTO(py::array_t<double> cArr, py::array_t<double> positions, py::array_
       // Save the neighbour distances into the arrays dx, dy and dz
       getDeltas(dx, dy, dz, positions, ix, iy, iz, ZIndexPair.second);
 
-      getRsZs(dx, dy, dz, r2, r4, r6, r8, z2, z4, z6, z8, n_neighbours);
-      getCfactors(preCoef, n_neighbours, dx, dy, dz, z2, z4, z6, z8, r2, r4, r6, r8, ReIm2, ReIm3, ReIm4, ReIm5, ReIm6, ReIm7, ReIm8, ReIm9, totalAN, lMax); // Erased tn
+      getRsZs(dx,x2,x4,x6,z8,x10, dy,y2,y4,y6,y8,y10, dz, r2, r4, r6, r8,r10, z2, z4, z6, z8,z10, n_neighbours);
+      getCfactors(preCoef, n_neighbours, dx,x2, x4, x6, x8,x10, dy,y2, y4, y6, y8,y10, dz, z2, z4, z6, z8,z10, r2, r4, r6, r8,r10, ReIm2, ReIm3, ReIm4, ReIm5, ReIm6, ReIm7, ReIm8, ReIm9, totalAN, lMax); // Erased tn
       getC(cnnd, preCoef, dx, dy, dz, r2, bOa, aOa, exes, totalAN, n_neighbours, Ns, Nt, lMax, i, j); //erased tn and Nx
     }
   }
