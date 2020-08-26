@@ -73,13 +73,22 @@ inline void getDeltas(double* x, double* y, double* z, const py::array_t<double>
 }
 
 //================================================================
-inline void getRsZs(double* x,double* x2,double* x4,double* x6,double* x8,double* x10, double* y,double* y2,double* y4,double* y6,double* y8,double* y10, double* z,double* r2,double* r4,double* r6,double* r8,double* r10,double* z2,double* z4,double* z6,double* z8,double* z10, int size){
+inline void getRsZs(double* x,double* x2,double* x4,double* x6,double* x8,double* x10,double* x12,double* x14,double* x16,double* x18, double* y,double* y2,double* y4,double* y6,double* y8,double* y10,double* y12,double* y14,double* y16,double* y18, double* z,double* r2,double* r4,double* r6,double* r8,double* r10,double* r12,double* r14,double* r16,double* r18,double* z2,double* z4,double* z6,double* z8,double* z10,double* z12,double* z14,double* z16,double* z18, int size){
   for(int i = 0; i < size; i++){
+
     r2[i] = x[i]*x[i] + y[i]*y[i] + z[i]*z[i];
+
     r4[i] = r2[i]*r2[i]; r6[i] = r2[i]*r4[i]; r8[i] = r4[i]*r4[i]; r10[i] = r6[i]*r4[i];
+    r12[i] = r6[i]*r6[i]; r14[i] = r6[i]*r8[i]; r16[i] = r8[i]*r8[i]; r18[i] = r10[i]*r8[i];
+
     x2[i] = x[i]*x[i]; x4[i] = x2[i]*x2[i]; x6[i] = x2[i]*x4[i]; x8[i] = x4[i]*x4[i];x10[i] = x6[i]*x4[i];
+    x12[i] = x6[i]*x6[i]; x14[i] = x6[i]*x8[i]; x16[i] = x8[i]*x8[i]; x18[i] = x10[i]*x8[i];
+
     y2[i] = y[i]*y[i]; y4[i] = y2[i]*y2[i]; y6[i] = y2[i]*y4[i]; y8[i] = y4[i]*y4[i];y10[i] = y6[i]*y4[i];
+    y12[i] = y6[i]*y6[i]; y14[i] = y6[i]*y8[i]; y16[i] = y8[i]*y8[i]; y18[i] = y10[i]*y8[i];
+
     z2[i] = z[i]*z[i]; z4[i] = z2[i]*z2[i]; z6[i] = z2[i]*z4[i]; z8[i] = z4[i]*z4[i];z10[i] = z6[i]*z4[i];
+    z12[i] = z6[i]*z6[i]; z14[i] = z6[i]*z8[i]; z16[i] = z8[i]*z8[i]; z18[i] = z10[i]*z8[i];
   }
 }
 //================================================================
@@ -91,6 +100,15 @@ void getAlphaBeta(double* aOa, double* bOa, double* alphas, double* betas, int N
   double  oneO1alpha7; double  oneO1alpha8; double  oneO1alpha9;
   double  oneO1alpha10;
   double  oneO1alpha11;
+  double  oneO1alpha12;
+  double  oneO1alpha13;
+  double  oneO1alpha14;
+  double  oneO1alpha15;
+  double  oneO1alpha16;
+  double  oneO1alpha17;
+  double  oneO1alpha18;
+  double  oneO1alpha19;
+  double  oneO1alpha20;
   double  oneO1alphaSqrt;// = (double*) malloc(Ns*sizeof(double));
   double  oneO1alphaSqrtX;
 
@@ -178,14 +196,106 @@ void getAlphaBeta(double* aOa, double* bOa, double* alphas, double* betas, int N
     int shift1 = 10*Ns; int shift2 = 10*NsNs;
     for(int k = 0; k < Ns; k++){
       oneO1alpha = 1.0/(1.0 + oOeta*alphas[shift1 + k]); oneO1alphaSqrt = sqrt(oneO1alpha);
-      aOa[shift1 + k] = -alphas[shift1 + k]*oneO1alpha; //got alpha_9k
+      aOa[shift1 + k] = -alphas[shift1 + k]*oneO1alpha; //got alpha_10k
       oneO1alpha11 = pow(oneO1alpha,11); oneO1alphaSqrtX = oneO1alphaSqrt*oneO1alpha11;
-      for(int n = 0; n < Ns; n++){bOa[shift2 + n*Ns + k] = oOeta3O2*betas[shift2 + n*Ns + k]*oneO1alphaSqrtX;} // got beta_9nk
+      for(int n = 0; n < Ns; n++){bOa[shift2 + n*Ns + k] = oOeta3O2*betas[shift2 + n*Ns + k]*oneO1alphaSqrtX;
+      } // got beta_10nk ... check, segfault
+    }
+  }
+
+  if(lMax > 10){ //OBS!!!!! lMax > 9
+    int shift1 = 11*Ns; int shift2 = 11*NsNs;
+    for(int k = 0; k < Ns; k++){
+      oneO1alpha = 1.0/(1.0 + oOeta*alphas[shift1 + k]); oneO1alphaSqrt = sqrt(oneO1alpha);
+      aOa[shift1 + k] = -alphas[shift1 + k]*oneO1alpha; //got alpha_11k
+      oneO1alpha12 = pow(oneO1alpha,12); oneO1alphaSqrtX = oneO1alphaSqrt*oneO1alpha12;
+      for(int n = 0; n < Ns; n++){bOa[shift2 + n*Ns + k] = oOeta3O2*betas[shift2 + n*Ns + k]*oneO1alphaSqrtX;
+      } // got beta_10nk ... check, segfault
+    }
+  }
+  if(lMax > 11){ //OBS!!!!! lMax > 9
+    int shift1 = 12*Ns; int shift2 = 12*NsNs;
+    for(int k = 0; k < Ns; k++){
+      oneO1alpha = 1.0/(1.0 + oOeta*alphas[shift1 + k]); oneO1alphaSqrt = sqrt(oneO1alpha);
+      aOa[shift1 + k] = -alphas[shift1 + k]*oneO1alpha; //got alpha_12k
+      oneO1alpha13 = pow(oneO1alpha,13); oneO1alphaSqrtX = oneO1alphaSqrt*oneO1alpha13;
+      for(int n = 0; n < Ns; n++){bOa[shift2 + n*Ns + k] = oOeta3O2*betas[shift2 + n*Ns + k]*oneO1alphaSqrtX;
+      } // got beta_10nk ... check, segfault
+    }
+  }
+  if(lMax > 12){ //OBS!!!!! lMax > 9
+    int shift1 = 13*Ns; int shift2 = 13*NsNs;
+    for(int k = 0; k < Ns; k++){
+      oneO1alpha = 1.0/(1.0 + oOeta*alphas[shift1 + k]); oneO1alphaSqrt = sqrt(oneO1alpha);
+      aOa[shift1 + k] = -alphas[shift1 + k]*oneO1alpha; //got alpha_13k
+      oneO1alpha14 = pow(oneO1alpha,14); oneO1alphaSqrtX = oneO1alphaSqrt*oneO1alpha14;
+      for(int n = 0; n < Ns; n++){bOa[shift2 + n*Ns + k] = oOeta3O2*betas[shift2 + n*Ns + k]*oneO1alphaSqrtX;
+      } // got beta_10nk ... check, segfault
+    }
+  }
+  if(lMax > 13){ //OBS!!!!! lMax > 9
+    int shift1 = 14*Ns; int shift2 = 14*NsNs;
+    for(int k = 0; k < Ns; k++){
+      oneO1alpha = 1.0/(1.0 + oOeta*alphas[shift1 + k]); oneO1alphaSqrt = sqrt(oneO1alpha);
+      aOa[shift1 + k] = -alphas[shift1 + k]*oneO1alpha; //got alpha_14k
+      oneO1alpha15 = pow(oneO1alpha,15); oneO1alphaSqrtX = oneO1alphaSqrt*oneO1alpha15;
+      for(int n = 0; n < Ns; n++){bOa[shift2 + n*Ns + k] = oOeta3O2*betas[shift2 + n*Ns + k]*oneO1alphaSqrtX;
+      } // got beta_10nk ... check, segfault
+    }
+  }
+  if(lMax > 14){ //OBS!!!!! lMax > 9
+    int shift1 = 15*Ns; int shift2 = 15*NsNs;
+    for(int k = 0; k < Ns; k++){
+      oneO1alpha = 1.0/(1.0 + oOeta*alphas[shift1 + k]); oneO1alphaSqrt = sqrt(oneO1alpha);
+      aOa[shift1 + k] = -alphas[shift1 + k]*oneO1alpha; //got alpha_15k
+      oneO1alpha16 = pow(oneO1alpha,16); oneO1alphaSqrtX = oneO1alphaSqrt*oneO1alpha16;
+      for(int n = 0; n < Ns; n++){bOa[shift2 + n*Ns + k] = oOeta3O2*betas[shift2 + n*Ns + k]*oneO1alphaSqrtX;
+      } // got beta_10nk ... check, segfault
+    }
+  }
+  if(lMax > 15){ //OBS!!!!! lMax > 9
+    int shift1 = 16*Ns; int shift2 = 16*NsNs;
+    for(int k = 0; k < Ns; k++){
+      oneO1alpha = 1.0/(1.0 + oOeta*alphas[shift1 + k]); oneO1alphaSqrt = sqrt(oneO1alpha);
+      aOa[shift1 + k] = -alphas[shift1 + k]*oneO1alpha; //got alpha_16k
+      oneO1alpha17 = pow(oneO1alpha,17); oneO1alphaSqrtX = oneO1alphaSqrt*oneO1alpha17;
+      for(int n = 0; n < Ns; n++){bOa[shift2 + n*Ns + k] = oOeta3O2*betas[shift2 + n*Ns + k]*oneO1alphaSqrtX;
+      } // got beta_10nk ... check, segfault
+    }
+  }
+  if(lMax > 16){ //OBS!!!!! lMax > 9
+    int shift1 = 17*Ns; int shift2 = 17*NsNs;
+    for(int k = 0; k < Ns; k++){
+      oneO1alpha = 1.0/(1.0 + oOeta*alphas[shift1 + k]); oneO1alphaSqrt = sqrt(oneO1alpha);
+      aOa[shift1 + k] = -alphas[shift1 + k]*oneO1alpha; //got alpha_17k
+      oneO1alpha18 = pow(oneO1alpha,18); oneO1alphaSqrtX = oneO1alphaSqrt*oneO1alpha18;
+      for(int n = 0; n < Ns; n++){bOa[shift2 + n*Ns + k] = oOeta3O2*betas[shift2 + n*Ns + k]*oneO1alphaSqrtX;
+      } // got beta_10nk ... check, segfault
+    }
+  }
+  if(lMax > 17){ //OBS!!!!! lMax > 9
+    int shift1 = 18*Ns; int shift2 = 18*NsNs;
+    for(int k = 0; k < Ns; k++){
+      oneO1alpha = 1.0/(1.0 + oOeta*alphas[shift1 + k]); oneO1alphaSqrt = sqrt(oneO1alpha);
+      aOa[shift1 + k] = -alphas[shift1 + k]*oneO1alpha; //got alpha_18k
+      oneO1alpha19 = pow(oneO1alpha,19); oneO1alphaSqrtX = oneO1alphaSqrt*oneO1alpha19;
+      for(int n = 0; n < Ns; n++){bOa[shift2 + n*Ns + k] = oOeta3O2*betas[shift2 + n*Ns + k]*oneO1alphaSqrtX;
+      } // got beta_10nk ... check, segfault
+    }
+  }
+  if(lMax > 18){ //OBS!!!!! lMax > 9
+    int shift1 = 19*Ns; int shift2 = 19*NsNs;
+    for(int k = 0; k < Ns; k++){
+      oneO1alpha = 1.0/(1.0 + oOeta*alphas[shift1 + k]); oneO1alphaSqrt = sqrt(oneO1alpha);
+      aOa[shift1 + k] = -alphas[shift1 + k]*oneO1alpha; //got alpha_19k
+      oneO1alpha20 = pow(oneO1alpha,20); oneO1alphaSqrtX = oneO1alphaSqrt*oneO1alpha20;
+      for(int n = 0; n < Ns; n++){bOa[shift2 + n*Ns + k] = oOeta3O2*betas[shift2 + n*Ns + k]*oneO1alphaSqrtX;
+      } // got beta_10nk ... check, segfault
     }
   }
 }
 //================================================================
-void getCfactors(double* preCoef, int Asize, double* x,double* x2, double* x4, double* x6, double* x8, double* x10, double* y,double* y2, double* y4, double* y6, double* y8, double* y10, double* z, double* z2, double* z4, double* z6, double* z8, double* z10, double* r2, double* r4, double* r6, double* r8,double* r10, double* ReIm2, double* ReIm3, double* ReIm4, double* ReIm5, double* ReIm6, double* ReIm7, double* ReIm8, double* ReIm9,int totalAN, int lMax){
+void getCfactors(double* preCoef, int Asize, double* x,double* x2, double* x4, double* x6, double* x8, double* x10,double* x12,double* x14,double* x16,double* x18, double* y,double* y2, double* y4, double* y6, double* y8, double* y10,double* y12,double* y14,double* y16,double* y18, double* z, double* z2, double* z4, double* z6, double* z8, double* z10,double* z12,double* z14,double* z16,double* z18, double* r2, double* r4, double* r6, double* r8,double* r10,double* r12,double* r14,double* r16,double* r18, double* ReIm2, double* ReIm3, double* ReIm4, double* ReIm5, double* ReIm6, double* ReIm7, double* ReIm8, double* ReIm9,int totalAN, int lMax){
   double c20c;double c30c;double c31c;double c40c;double c41c;double c42c;
   double c50c;double c51c;double c52c;double c53c;double c60c;double c61c;
   double c62c;double c63c;double c64c;double c70c;double c71c;double c72c;
@@ -367,8 +477,8 @@ void getCfactors(double* preCoef, int Asize, double* x,double* x2, double* x4, d
       /*c99Re*/  preCoef[totalAN*94+i] =      ReIm9[i2  ];
       /*c99Im*/  preCoef[totalAN*95+i] =      ReIm9[i2+1];
     }
-    if (lMax > 9){
-      /**/  preCoef[totalAN*96+i] = 1.53479023644398*x[i]*y[i]*(5.0*x8[i] - 60.0*x6[i]*y2[i] + 126.0*x4[i]*y4[i] - 60.0*x2[i]*y6[i] + 5.0*y8[i]);
+    if (lMax > 9){ //OBS!!!!! lMax > 9, tesseral cases
+      /*l=10*/  preCoef[totalAN*96+i] = 1.53479023644398*x[i]*y[i]*(5.0*x8[i] - 60.0*x6[i]*y2[i] + 126.0*x4[i]*y4[i] - 60.0*x2[i]*y6[i] + 5.0*y8[i]);
       /**/  preCoef[totalAN*97+i] = 3.43189529989171*y[i]*z[i]*(9.0*x8[i] - 84.0*x6[i]*y2[i] + 126.0*x4[i]*y4[i] - 36.0*x2[i]*y6[i] + y8[i]);
       /**/  preCoef[totalAN*98+i] = -4.45381546176335*x[i]*y[i]*(x2[i] + y2[i] - 18.0*z2[i])*(x6[i] - 7.0*x4[i]*y2[i] + 7.0*x2[i]*y4[i] - y6[i]);
       /**/  preCoef[totalAN*99+i] = 1.36369691122981*y[i]*z[i]*(-3.0*x2[i] - 3.0*y2[i] + 16.0*z2[i])*(7.0*x6[i] - 35.0*x4[i]*y2[i] + 21.0*x2[i]*y4[i] - y6[i]);
@@ -389,14 +499,18 @@ void getCfactors(double* preCoef, int Asize, double* x,double* x2, double* x4, d
       /**/  preCoef[totalAN*114+i] = -0.556726932720418*(x2[i] + y2[i] - 18.0*z2[i])*(x8[i] - 28.0*x6[i]*y2[i] + 70.0*x4[i]*y4[i] - 28.0*x2[i]*y6[i] + y8[i]);
       /**/  preCoef[totalAN*115+i] = 3.43189529989171*x[i]*z[i]*(x8[i] - 36.0*x6[i]*y2[i] + 126.0*x4[i]*y4[i] - 84.0*x2[i]*y6[i] + 9.0*y8[i]);
       /**/  preCoef[totalAN*116+i] = 0.76739511822199*x10[i] - 34.5327803199895*x8[i]*y2[i] + 161.152974826618*x6[i]*y4[i] - 161.152974826618*x4[i]*y6[i] + 34.5327803199895*x2[i]*y8[i] - 0.76739511822199*y10[i];
-
     }
+
+
+
   }
 }
 //================================================================
 void getC(double* C, double* preCoef, double* x, double* y, double* z,double* r2, double* bOa, double* aOa, double* exes,  int totalAN, int Asize, int Ns, int Ntypes, int lMax, int posI, int typeJ){
 
   if(Asize == 0){return;}
+//  double sumMe = 0; int NsNs = Ns*Ns;  int NsJ = ((lMax+1)*(lMax+1))*Ns*typeJ; int LNsNs;
+//  int LNs; int NsTsI = ((lMax+1)*(lMax+1))*Ns*Ntypes*posI;
   double sumMe = 0; int NsNs = Ns*Ns;  int NsJ = ((lMax+1)*(lMax+1))*Ns*typeJ; int LNsNs;
   int LNs; int NsTsI = ((lMax+1)*(lMax+1))*Ns*Ntypes*posI;
   for(int k = 0; k < Ns; k++){
@@ -635,8 +749,16 @@ void getC(double* C, double* preCoef, double* x, double* y, double* z,double* r2
   for(int k = 0; k < Ns; k++){
     for(int i = 0; i < Asize; i++){exes[i] = exp(aOa[LNs + k]*r2[i]);}//exponents
       for(int sumems = 100; sumems < 121; sumems++){
-        sumMe = 0; for(int i = 0; i < Asize; i++){sumMe += exes[i]*(preCoef[totalAN*(sumems - 4)+i]);}
-        for(int n = 0; n < Ns; n++){C[NsTsI + NsJ + Ns*sumems + n] += bOa[LNsNs + n*Ns + k]*sumMe;}
+        sumMe = 0; for(int i = 0; i < Asize; i++){
+		sumMe += exes[i]*(preCoef[totalAN*(sumems - 4)+i]);
+//		printf("%d\n",totalAN*(sumems - 4)+i );
+//		printf("total: %d\n",totalAN);
+//		printf("preCoef: %f\n",preCoef[totalAN*(sumems - 4)+i]);
+	}
+        for(int n = 0; n < Ns; n++){
+		C[NsTsI + NsJ + Ns*sumems + n] += bOa[LNsNs + n*Ns + k]*sumMe; // FOUND SEGFAULT!!!!! OBS!!!
+//		printf("preCoef: %f\n",bOa[LNsNs + n*Ns + k]); // FOUND HERE!!!
+	}
 	//shiftBuffer++; WRONG LOGIC, but not in use anyway ( not considering k++)
       }
   }}
@@ -947,7 +1069,177 @@ void getPNoCross(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMax
         }
       }
     }
-  } // Correct logic? buffDouble?
+  } 
+   if(lMax > 10) { // OBS!!!! LMAX > 9 ------
+    double prel11 = PI*sqrt(8.0/(2.0*11.0+1.0));
+    for(int i = 0; i < Hs; i++){
+      for(int j = 0; j < Ts; j++){
+        shiftN = 0;
+        for(int k = 0; k < Ns; k++){
+          for(int kd = k; kd < Ns; kd++){
+            double buffDouble = 0;
+            for(int buffShift = 11*11; buffShift < 12*12; buffShift++){
+              buffDouble += Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
+	    }
+            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 11*NsNs + shiftN] = prel11*buffDouble;
+            shiftN++;
+          }
+        }
+      }
+    }
+  } 
+
+   if(lMax > 11) { // OBS!!!! LMAX > 9 ------
+    double prel12 = PI*sqrt(8.0/(2.0*12.0+1.0));
+    for(int i = 0; i < Hs; i++){
+      for(int j = 0; j < Ts; j++){
+        shiftN = 0;
+        for(int k = 0; k < Ns; k++){
+          for(int kd = k; kd < Ns; kd++){
+            double buffDouble = 0;
+            for(int buffShift = 12*12; buffShift < 13*13; buffShift++){
+              buffDouble += Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
+	    }
+            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 12*NsNs + shiftN] = prel12*buffDouble;
+            shiftN++;
+          }
+        }
+      }
+    }
+  } 
+
+   if(lMax > 12) { // OBS!!!! LMAX > 9 ------
+    double prel13 = PI*sqrt(8.0/(2.0*13.0+1.0));
+    for(int i = 0; i < Hs; i++){
+      for(int j = 0; j < Ts; j++){
+        shiftN = 0;
+        for(int k = 0; k < Ns; k++){
+          for(int kd = k; kd < Ns; kd++){
+            double buffDouble = 0;
+            for(int buffShift = 13*13; buffShift < 14*14; buffShift++){
+              buffDouble += Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
+	    }
+            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 13*NsNs + shiftN] = prel13*buffDouble;
+            shiftN++;
+          }
+        }
+      }
+    }
+  } 
+
+   if(lMax > 13) { // OBS!!!! LMAX > 9 ------
+    double prel14 = PI*sqrt(8.0/(2.0*14.0+1.0));
+    for(int i = 0; i < Hs; i++){
+      for(int j = 0; j < Ts; j++){
+        shiftN = 0;
+        for(int k = 0; k < Ns; k++){
+          for(int kd = k; kd < Ns; kd++){
+            double buffDouble = 0;
+            for(int buffShift = 14*14; buffShift < 15*15; buffShift++){
+              buffDouble += Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
+	    }
+            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 14*NsNs + shiftN] = prel14*buffDouble;
+            shiftN++;
+          }
+        }
+      }
+    }
+  } 
+
+   if(lMax > 14) { // OBS!!!! LMAX > 9 ------
+    double prel15 = PI*sqrt(8.0/(2.0*15.0+1.0));
+    for(int i = 0; i < Hs; i++){
+      for(int j = 0; j < Ts; j++){
+        shiftN = 0;
+        for(int k = 0; k < Ns; k++){
+          for(int kd = k; kd < Ns; kd++){
+            double buffDouble = 0;
+            for(int buffShift = 15*15; buffShift < 16*16; buffShift++){
+              buffDouble += Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
+	    }
+            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 15*NsNs + shiftN] = prel15*buffDouble;
+            shiftN++;
+          }
+        }
+      }
+    }
+  } 
+
+   if(lMax > 15) { // OBS!!!! LMAX > 9 ------
+    double prel16 = PI*sqrt(8.0/(2.0*16.0+1.0));
+    for(int i = 0; i < Hs; i++){
+      for(int j = 0; j < Ts; j++){
+        shiftN = 0;
+        for(int k = 0; k < Ns; k++){
+          for(int kd = k; kd < Ns; kd++){
+            double buffDouble = 0;
+            for(int buffShift = 16*16; buffShift < 17*17; buffShift++){
+              buffDouble += Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
+	    }
+            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 16*NsNs + shiftN] = prel16*buffDouble;
+            shiftN++;
+          }
+        }
+      }
+    }
+  } 
+
+   if(lMax > 16) { // OBS!!!! LMAX > 9 ------
+    double prel17 = PI*sqrt(8.0/(2.0*17.0+1.0));
+    for(int i = 0; i < Hs; i++){
+      for(int j = 0; j < Ts; j++){
+        shiftN = 0;
+        for(int k = 0; k < Ns; k++){
+          for(int kd = k; kd < Ns; kd++){
+            double buffDouble = 0;
+            for(int buffShift = 17*17; buffShift < 18*18; buffShift++){
+              buffDouble += Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
+	    }
+            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 17*NsNs + shiftN] = prel17*buffDouble;
+            shiftN++;
+          }
+        }
+      }
+    }
+  } 
+
+   if(lMax > 17) { // OBS!!!! LMAX > 9 ------
+    double prel18 = PI*sqrt(8.0/(2.0*18.0+1.0));
+    for(int i = 0; i < Hs; i++){
+      for(int j = 0; j < Ts; j++){
+        shiftN = 0;
+        for(int k = 0; k < Ns; k++){
+          for(int kd = k; kd < Ns; kd++){
+            double buffDouble = 0;
+            for(int buffShift = 18*18; buffShift < 19*19; buffShift++){
+              buffDouble += Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
+	    }
+            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 18*NsNs + shiftN] = prel18*buffDouble;
+            shiftN++;
+          }
+        }
+      }
+    }
+  } 
+
+   if(lMax > 18) { // OBS!!!! LMAX > 9 ------
+    double prel19 = PI*sqrt(8.0/(2.0*19.0+1.0));
+    for(int i = 0; i < Hs; i++){
+      for(int j = 0; j < Ts; j++){
+        shiftN = 0;
+        for(int k = 0; k < Ns; k++){
+          for(int kd = k; kd < Ns; kd++){
+            double buffDouble = 0;
+            for(int buffShift = 19*19; buffShift < 20*20; buffShift++){
+              buffDouble += Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
+	    }
+            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 19*NsNs + shiftN] = prel19*buffDouble;
+            shiftN++;
+          }
+        }
+      }
+    }
+  } 
 }
 //=======================================================================
 /**
@@ -1281,23 +1573,234 @@ void getPCrossOver(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lM
   }
 
    if (lMax > 9) { // OBS!!!! LMAX > 9 ------
-    double prel9 = PI*sqrt(8.0/(2.0*10.0+1.0));
+    double prel10 = PI*sqrt(8.0/(2.0*10.0+1.0));
     for(int i = 0; i < Hs; i++){
+      shiftT = 0;
       for(int j = 0; j < Ts; j++){
-        shiftN = 0;
-        for(int k = 0; k < Ns; k++){
-          for(int kd = k; kd < Ns; kd++){
-            double buffDouble = 0;
-            for(int buffShift = 100; buffShift < 121; buffShift++){
-              buffDouble += Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
-	    }
-            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 10*NsNs + shiftN] = prel9*buffDouble;
-            shiftN++;
+        for(int jd = j; jd < Ts; jd++){
+          shiftN = 0;
+          for(int k = 0; k < Ns; k++){
+            for(int kd = k; kd < Ns; kd++){
+              double buffDouble = 0;
+              for(int buffShift = 100; buffShift < 121; buffShift++){
+                buffDouble += Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
+  	       }
+              soapMat[NsNsLmaxTs*i+NsNsLmax*shiftT+ 10*NsNs + shiftN] = prel10*buffDouble;
+              shiftN++;
+            }
           }
+	  shiftT++;
         }
       }
     }
-  } // Correct logic? buffDouble?
+  } 
+
+   if (lMax > 10) { // OBS!!!! LMAX > 9 ------
+    double prel11 = PI*sqrt(8.0/(2.0*11.0+1.0));
+    for(int i = 0; i < Hs; i++){
+      shiftT = 0;
+      for(int j = 0; j < Ts; j++){
+        for(int jd = j; jd < Ts; jd++){
+          shiftN = 0;
+          for(int k = 0; k < Ns; k++){
+            for(int kd = k; kd < Ns; kd++){
+              double buffDouble = 0;
+              for(int buffShift = 11*11; buffShift < 12*12; buffShift++){
+                buffDouble += Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
+  	       }
+              soapMat[NsNsLmaxTs*i+NsNsLmax*shiftT+ 11*NsNs + shiftN] = prel11*buffDouble;
+              shiftN++;
+            }
+          }
+	  shiftT++;
+        }
+      }
+    }
+  } 
+
+   if (lMax > 11) { // OBS!!!! LMAX > 9 ------
+    double prel12 = PI*sqrt(8.0/(2.0*12.0+1.0));
+    for(int i = 0; i < Hs; i++){
+      shiftT = 0;
+      for(int j = 0; j < Ts; j++){
+        for(int jd = j; jd < Ts; jd++){
+          shiftN = 0;
+          for(int k = 0; k < Ns; k++){
+            for(int kd = k; kd < Ns; kd++){
+              double buffDouble = 0;
+              for(int buffShift = 12*12; buffShift < 13*13; buffShift++){
+                buffDouble += Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
+  	       }
+              soapMat[NsNsLmaxTs*i+NsNsLmax*shiftT+ 12*NsNs + shiftN] = prel12*buffDouble;
+              shiftN++;
+            }
+          }
+	  shiftT++;
+        }
+      }
+    }
+  } 
+
+   if (lMax > 12) { // OBS!!!! LMAX > 9 ------
+    double prel13 = PI*sqrt(8.0/(2.0*13.0+1.0));
+    for(int i = 0; i < Hs; i++){
+      shiftT = 0;
+      for(int j = 0; j < Ts; j++){
+        for(int jd = j; jd < Ts; jd++){
+          shiftN = 0;
+          for(int k = 0; k < Ns; k++){
+            for(int kd = k; kd < Ns; kd++){
+              double buffDouble = 0;
+              for(int buffShift = 13*13; buffShift < 14*14; buffShift++){
+                buffDouble += Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
+  	       }
+              soapMat[NsNsLmaxTs*i+NsNsLmax*shiftT+ 13*NsNs + shiftN] = prel13*buffDouble;
+              shiftN++;
+            }
+          }
+	  shiftT++;
+        }
+      }
+    }
+  } 
+
+   if (lMax > 13) { // OBS!!!! LMAX > 9 ------
+    double prel14 = PI*sqrt(8.0/(2.0*14.0+1.0));
+    for(int i = 0; i < Hs; i++){
+      shiftT = 0;
+      for(int j = 0; j < Ts; j++){
+        for(int jd = j; jd < Ts; jd++){
+          shiftN = 0;
+          for(int k = 0; k < Ns; k++){
+            for(int kd = k; kd < Ns; kd++){
+              double buffDouble = 0;
+              for(int buffShift = 14*14; buffShift < 15*15; buffShift++){
+                buffDouble += Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
+  	       }
+              soapMat[NsNsLmaxTs*i+NsNsLmax*shiftT+ 14*NsNs + shiftN] = prel14*buffDouble;
+              shiftN++;
+            }
+          }
+	  shiftT++;
+        }
+      }
+    }
+  } 
+
+   if (lMax > 14) { // OBS!!!! LMAX > 9 ------
+    double prel15 = PI*sqrt(8.0/(2.0*15.0+1.0));
+    for(int i = 0; i < Hs; i++){
+      shiftT = 0;
+      for(int j = 0; j < Ts; j++){
+        for(int jd = j; jd < Ts; jd++){
+          shiftN = 0;
+          for(int k = 0; k < Ns; k++){
+            for(int kd = k; kd < Ns; kd++){
+              double buffDouble = 0;
+              for(int buffShift = 15*15; buffShift < 16*16; buffShift++){
+                buffDouble += Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
+  	       }
+              soapMat[NsNsLmaxTs*i+NsNsLmax*shiftT+ 15*NsNs + shiftN] = prel15*buffDouble;
+              shiftN++;
+            }
+          }
+	  shiftT++;
+        }
+      }
+    }
+  } 
+
+   if (lMax > 15) { // OBS!!!! LMAX > 9 ------
+    double prel16 = PI*sqrt(8.0/(2.0*16.0+1.0));
+    for(int i = 0; i < Hs; i++){
+      shiftT = 0;
+      for(int j = 0; j < Ts; j++){
+        for(int jd = j; jd < Ts; jd++){
+          shiftN = 0;
+          for(int k = 0; k < Ns; k++){
+            for(int kd = k; kd < Ns; kd++){
+              double buffDouble = 0;
+              for(int buffShift = 16*16; buffShift < 17*17; buffShift++){
+                buffDouble += Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
+  	       }
+              soapMat[NsNsLmaxTs*i+NsNsLmax*shiftT+ 16*NsNs + shiftN] = prel16*buffDouble;
+              shiftN++;
+            }
+          }
+	  shiftT++;
+        }
+      }
+    }
+  } 
+
+   if (lMax > 16) { // OBS!!!! LMAX > 9 ------
+    double prel17 = PI*sqrt(8.0/(2.0*17.0+1.0));
+    for(int i = 0; i < Hs; i++){
+      shiftT = 0;
+      for(int j = 0; j < Ts; j++){
+        for(int jd = j; jd < Ts; jd++){
+          shiftN = 0;
+          for(int k = 0; k < Ns; k++){
+            for(int kd = k; kd < Ns; kd++){
+              double buffDouble = 0;
+              for(int buffShift = 17*17; buffShift < 18*18; buffShift++){
+                buffDouble += Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
+  	       }
+              soapMat[NsNsLmaxTs*i+NsNsLmax*shiftT+ 17*NsNs + shiftN] = prel17*buffDouble;
+              shiftN++;
+            }
+          }
+	  shiftT++;
+        }
+      }
+    }
+  } 
+
+   if (lMax > 17) { // OBS!!!! LMAX > 9 ------
+    double prel18 = PI*sqrt(8.0/(2.0*18.0+1.0));
+    for(int i = 0; i < Hs; i++){
+      shiftT = 0;
+      for(int j = 0; j < Ts; j++){
+        for(int jd = j; jd < Ts; jd++){
+          shiftN = 0;
+          for(int k = 0; k < Ns; k++){
+            for(int kd = k; kd < Ns; kd++){
+              double buffDouble = 0;
+              for(int buffShift = 18*18; buffShift < 19*19; buffShift++){
+                buffDouble += Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
+  	       }
+              soapMat[NsNsLmaxTs*i+NsNsLmax*shiftT+ 18*NsNs + shiftN] = prel18*buffDouble;
+              shiftN++;
+            }
+          }
+	  shiftT++;
+        }
+      }
+    }
+  } 
+
+   if (lMax > 18) { // OBS!!!! LMAX > 9 ------
+    double prel19 = PI*sqrt(8.0/(2.0*19.0+1.0));
+    for(int i = 0; i < Hs; i++){
+      shiftT = 0;
+      for(int j = 0; j < Ts; j++){
+        for(int jd = j; jd < Ts; jd++){
+          shiftN = 0;
+          for(int k = 0; k < Ns; k++){
+            for(int kd = k; kd < Ns; kd++){
+              double buffDouble = 0;
+              for(int buffShift = 19*19; buffShift < 20*20; buffShift++){
+                buffDouble += Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
+  	       }
+              soapMat[NsNsLmaxTs*i+NsNsLmax*shiftT+ 19*NsNs + shiftN] = prel19*buffDouble;
+              shiftN++;
+            }
+          }
+	  shiftT++;
+        }
+      }
+    }
+  } 
 }
 
 //===========================================================================================
@@ -1321,21 +1824,37 @@ void soapGTO(py::array_t<double> cArr, py::array_t<double> positions, py::array_
   double* x6 = (double*) malloc(sizeof(double)*totalAN);
   double* x8 = (double*) malloc(sizeof(double)*totalAN);
   double* x10 = (double*) malloc(sizeof(double)*totalAN);
+  double* x12 = (double*) malloc(sizeof(double)*totalAN);
+  double* x14 = (double*) malloc(sizeof(double)*totalAN);
+  double* x16 = (double*) malloc(sizeof(double)*totalAN);
+  double* x18 = (double*) malloc(sizeof(double)*totalAN);
   double* y2 = (double*) malloc(sizeof(double)*totalAN);
   double* y4 = (double*) malloc(sizeof(double)*totalAN);
   double* y6 = (double*) malloc(sizeof(double)*totalAN);
   double* y8 = (double*) malloc(sizeof(double)*totalAN);
   double* y10 = (double*) malloc(sizeof(double)*totalAN);
+  double* y12 = (double*) malloc(sizeof(double)*totalAN);
+  double* y14 = (double*) malloc(sizeof(double)*totalAN);
+  double* y16 = (double*) malloc(sizeof(double)*totalAN);
+  double* y18 = (double*) malloc(sizeof(double)*totalAN);
   double* z2 = (double*) malloc(sizeof(double)*totalAN);
   double* z4 = (double*) malloc(sizeof(double)*totalAN);
   double* z6 = (double*) malloc(sizeof(double)*totalAN);
   double* z8 = (double*) malloc(sizeof(double)*totalAN);
   double* z10 = (double*) malloc(sizeof(double)*totalAN);
+  double* z12 = (double*) malloc(sizeof(double)*totalAN);
+  double* z14 = (double*) malloc(sizeof(double)*totalAN);
+  double* z16 = (double*) malloc(sizeof(double)*totalAN);
+  double* z18 = (double*) malloc(sizeof(double)*totalAN);
   double* r2 = (double*) malloc(sizeof(double)*totalAN);
   double* r4 = (double*) malloc(sizeof(double)*totalAN);
   double* r6 = (double*) malloc(sizeof(double)*totalAN);
   double* r8 = (double*) malloc(sizeof(double)*totalAN);
   double* r10 = (double*) malloc(sizeof(double)*totalAN);
+  double* r12 = (double*) malloc(sizeof(double)*totalAN);
+  double* r14 = (double*) malloc(sizeof(double)*totalAN);
+  double* r16 = (double*) malloc(sizeof(double)*totalAN);
+  double* r18 = (double*) malloc(sizeof(double)*totalAN);
   double* ReIm2 = (double*) malloc(2*sizeof(double)*totalAN);// 2 -> Re + ixIm
   double* ReIm3 = (double*) malloc(2*sizeof(double)*totalAN);// 2 -> Re + ixIm
   double* ReIm4 = (double*) malloc(2*sizeof(double)*totalAN);// 2 -> Re + ixIm
@@ -1345,13 +1864,15 @@ void soapGTO(py::array_t<double> cArr, py::array_t<double> positions, py::array_
   double* ReIm8 = (double*) malloc(2*sizeof(double)*totalAN);// 2 -> Re + ixIm
   double* ReIm9 = (double*) malloc(2*sizeof(double)*totalAN);// 2 -> Re + ixIm
   double* exes = (double*) malloc (sizeof(double)*totalAN);
-  double* preCoef = (double*) malloc(((lMax + 1)*(lMax + 1) - 4)*sizeof(double)*totalAN);
+  double* preCoef = (double*) malloc(((lMax + 1)*(lMax + 1) - 4)*sizeof(double)*totalAN); // -4 because no need for l=0 and l=1 (m=-1,0,1) cases.
   double* bOa = (double*) malloc((lMax+1)*NsNs*sizeof(double));
   double* aOa = (double*) malloc((lMax+1)*Ns*sizeof(double));
 
 
   double* cnnd = (double*) malloc(((lMax+1)*(lMax+1))*Nt*Ns*Hs*sizeof(double));
-  for(int i = 0; i < ((lMax+1)*(lMax+1))*Nt*Ns*Hs; i++){cnnd[i] = 0.0;}
+  for(int i = 0; i < ((lMax+1)*(lMax+1))*Nt*Ns*Hs; i++){cnnd[i] = 0.0;
+//	  printf("cnnd: %f\n", cnnd[i])
+		  ;}
 
   // Initialize binning
   CellList cellList(positions, rCut+cutoffPadding);
@@ -1397,8 +1918,8 @@ void soapGTO(py::array_t<double> cArr, py::array_t<double> positions, py::array_
       // Save the neighbour distances into the arrays dx, dy and dz
       getDeltas(dx, dy, dz, positions, ix, iy, iz, ZIndexPair.second);
 
-      getRsZs(dx,x2,x4,x6,z8,x10, dy,y2,y4,y6,y8,y10, dz, r2, r4, r6, r8,r10, z2, z4, z6, z8,z10, n_neighbours);
-      getCfactors(preCoef, n_neighbours, dx,x2, x4, x6, x8,x10, dy,y2, y4, y6, y8,y10, dz, z2, z4, z6, z8,z10, r2, r4, r6, r8,r10, ReIm2, ReIm3, ReIm4, ReIm5, ReIm6, ReIm7, ReIm8, ReIm9, totalAN, lMax); // Erased tn
+      getRsZs(dx,x2,x4,x6,x8,x10,x12,x14,x16,x18, dy,y2,y4,y6,y8,y10,y12,y14,y16,y18, dz, r2, r4, r6, r8,r10,r12,r14,r16,r18, z2, z4, z6, z8,z10,z12,z14,z16,z18, n_neighbours);
+      getCfactors(preCoef, n_neighbours, dx,x2, x4, x6, x8,x10,x12,x14,x16,x18, dy,y2, y4, y6, y8,y10,y12,y14,y16,y18, dz, z2, z4, z6, z8,z10,z12,z14,z16,z18, r2, r4, r6, r8,r10,r12,r14,r16,r18, ReIm2, ReIm3, ReIm4, ReIm5, ReIm6, ReIm7, ReIm8, ReIm9, totalAN, lMax); // Erased tn
       getC(cnnd, preCoef, dx, dy, dz, r2, bOa, aOa, exes, totalAN, n_neighbours, Ns, Nt, lMax, i, j); //erased tn and Nx
     }
   }
@@ -1409,23 +1930,39 @@ void soapGTO(py::array_t<double> cArr, py::array_t<double> positions, py::array_
   free(x6);
   free(x8);
   free(x10);
+  free(x12);
+  free(x14);
+  free(x16);
+  free(x18);
   free(dy);
   free(y2);
   free(y4);
   free(y6);
   free(y8);
   free(y10);
+  free(y12);
+  free(y14);
+  free(y16);
+  free(y18);
   free(dz);
   free(z2);
   free(z4);
   free(z6);
   free(z8);
   free(z10);
+  free(z12);
+  free(z14);
+  free(z16);
+  free(z18);
   free(r2);
   free(r4);
   free(r6);
   free(r8);
   free(r10);
+  free(r12);
+  free(r14);
+  free(r16);
+  free(r18);
   free(ReIm2);
   free(ReIm3);
   free(ReIm4);
