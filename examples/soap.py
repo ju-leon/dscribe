@@ -1,9 +1,12 @@
 from dscribe.descriptors import SOAP
+#import sys
+#import numpy
+#numpy.set_printoptions(threshold=sys.maxsize)
 
 species = ["H", "C", "O", "N"]
 rcut = 6.0
-nmax = 8
-lmax = 6
+nmax = 9
+lmax = 19
 
 # Setting up the SOAP descriptor
 soap = SOAP(
@@ -35,6 +38,7 @@ coulomb_matrices = soap.create(samples, positions, n_jobs=2)  # Parallel
 # Lets change the SOAP setup and see how the number of features changes
 small_soap = SOAP(species=species, rcut=rcut, nmax=2, lmax=0)
 big_soap = SOAP(species=species, rcut=rcut, nmax=9, lmax=9)
+print(big_soap)
 n_feat1 = small_soap.get_number_of_features()
 n_feat2 = big_soap.get_number_of_features()
 print(n_feat1, n_feat2)
@@ -48,7 +52,7 @@ periodic_soap = SOAP(
     species=[29],
     rcut=rcut,
     nmax=nmax,
-    lmax=nmax,
+    lmax=lmax,
     periodic=True,
     sparse=False
 )
@@ -78,6 +82,7 @@ soap = SOAP(
 )
 soap_water = soap.create(water)
 print(type(soap_water))
+print(soap_water)
 
 soap = SOAP(
     species=species,
