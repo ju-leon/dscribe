@@ -133,7 +133,7 @@ class SOAP(Descriptor):
                     "When using the gaussian radial basis set (gto), the radial "
                     "cutoff should be bigger than 1 angstrom."
                 )
-            if lmax > 9:
+            if lmax > 19: # OBS!!! CHanged from 9 to 10
                 raise ValueError(
                     "When using the gaussian radial basis set (gto), lmax "
                     "cannot currently exceed 9. lmax={}".format(lmax)
@@ -753,10 +753,10 @@ class SOAP(Descriptor):
         a = np.linspace(1, rcut, nmax)
         threshold = 1e-3  # This is the fixed gaussian decay threshold
 
-        alphas_full = np.zeros((10, nmax))
-        betas_full = np.zeros((10, nmax, nmax))
+        alphas_full = np.zeros((20, nmax))
+        betas_full = np.zeros((20, nmax, nmax))
 
-        for l in range(0, 10):
+        for l in range(0, 20):
             # The alphas are calculated so that the GTOs will decay to the set
             # threshold value at their respective cutoffs
             alphas = -np.log(threshold/np.power(a, l))/a**2
