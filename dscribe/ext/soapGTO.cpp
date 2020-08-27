@@ -309,8 +309,8 @@ void getCfactors(double* preCoef, int Asize, double* x,double* x2, double* x4, d
 
   for (int i = 0; i < Asize; i++) {
     if (lMax > 1){
-      /*c20  */  preCoef[        +i] = 1.09254843059208*x[i]*y[i];
-      /*c21Re*/  preCoef[totalAN*0+i] = 1.09254843059208*y[i]*z[i];
+      /*c20  */  preCoef[         +i] = 1.09254843059208*x[i]*y[i];
+      /*c21Re*/  preCoef[totalAN*1+i] = 1.09254843059208*y[i]*z[i];
       /*c21Im*/  preCoef[totalAN*2+i] = -0.31539156525252*x2[i] - 0.31539156525252*y2[i] + 0.63078313050504*z2[i];
       /*c22Re*/  preCoef[totalAN*3+i] = 1.09254843059208*x[i]*z[i];
       /*c22Im*/  preCoef[totalAN*4+i] = 0.54627421529604*x2[i] - 0.54627421529604*y2[i];
