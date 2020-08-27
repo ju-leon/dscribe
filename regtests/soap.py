@@ -100,7 +100,7 @@ class SoapTests(TestBaseClass, unittest.TestCase):
             species=[1, 8],
             rcut=3,
             nmax=3,
-            lmax=3,
+            lmax=0,
             sparse=False,
         )
         nfeat1 = a.get_number_of_features()
@@ -367,7 +367,7 @@ class SoapTests(TestBaseClass, unittest.TestCase):
             species=[6, 7, 8],
             rcut=5,
             nmax=3,
-            lmax=3,
+            lmax=0,
             sigma=1,
             periodic=False,
             crossover=True,
@@ -447,7 +447,7 @@ class SoapTests(TestBaseClass, unittest.TestCase):
             species=[6, 7, 8],
             rcut=5,
             nmax=3,
-            lmax=3,
+            lmax=0,
             sigma=1,
             periodic=False,
             crossover=True,
@@ -640,7 +640,7 @@ class SoapTests(TestBaseClass, unittest.TestCase):
             desc = SOAP(
                 species=system.get_atomic_numbers(),
                 rcut=8.0,
-                lmax=5,
+                lmax=0,
                 nmax=5,
                 rbf="gto",
                 periodic=False,
@@ -775,8 +775,8 @@ class SoapTests(TestBaseClass, unittest.TestCase):
         nmax = 2
         lmax = 3
         soap = SOAP(species=[1], lmax=lmax, nmax=nmax, sigma=sigma, rcut=rcut, crossover=True, sparse=False)
-        alphas = np.reshape(soap._alphas, [10, nmax])
-        betas = np.reshape(soap._betas, [10, nmax, nmax])
+        alphas = np.reshape(soap._alphas, [20, nmax])
+        betas = np.reshape(soap._betas, [20, nmax, nmax])
 
         nr = 10000
         n_basis = 0
@@ -813,7 +813,7 @@ class SoapTests(TestBaseClass, unittest.TestCase):
         sigma = 0.55
         rcut = 2.0
         nmax = 2
-        lmax = 2
+        lmax = 1
 
         # Limits for radius
         r1 = 0.
@@ -839,8 +839,8 @@ class SoapTests(TestBaseClass, unittest.TestCase):
         # the radial basis functions.
         soap = SOAP(species=species, lmax=lmax, nmax=nmax, sigma=sigma, rcut=rcut, crossover=True, sparse=False)
         analytical_power_spectrum = soap.create(system, positions=[[0, 0, 0]])[0]
-        alphagrid = np.reshape(soap._alphas, [10, nmax])
-        betagrid = np.reshape(soap._betas, [10, nmax, nmax])
+        alphagrid = np.reshape(soap._alphas, [20, nmax])
+        betagrid = np.reshape(soap._betas, [20, nmax, nmax])
 
         coeffs = np.zeros((n_elems, nmax, lmax+1, 2*lmax+1))
         for iZ, Z in enumerate(elements):
@@ -901,8 +901,8 @@ class SoapTests(TestBaseClass, unittest.TestCase):
                             lambda r: t2,
                             lambda r, theta: p1,
                             lambda r, theta: p2,
-                            epsabs=0.001,
-                            epsrel=0.001,
+                            epsabs=0.00000001, # added 3 zeros
+                            epsrel=0.00000001, # added 3 zeros
                         )
                         integral, error = cnlm
                         coeffs[iZ, n, l, im] = integral
@@ -921,10 +921,10 @@ class SoapTests(TestBaseClass, unittest.TestCase):
                                     value *= prefactor
                                     numerical_power_spectrum.append(value)
 
-        # print("Numerical: {}".format(numerical_power_spectrum))
-        # print("Analytical: {}".format(analytical_power_spectrum))
+        print("Numerical: {}".format(numerical_power_spectrum))
+        print("Analytical: {}".format(analytical_power_spectrum)) ##
 
-        self.assertTrue(np.allclose(numerical_power_spectrum, analytical_power_spectrum, atol=1e-15, rtol=0.01))
+        self.assertTrue(np.allclose(numerical_power_spectrum, analytical_power_spectrum, atol=1e-10, rtol=0.01))
 
     def test_poly_integration(self):
         """Tests that the partial power spectrum with the polynomial basis done
@@ -1028,8 +1028,8 @@ class SoapTests(TestBaseClass, unittest.TestCase):
                             lambda r: t2,
                             lambda r, theta: p1,
                             lambda r, theta: p2,
-                            epsabs=0.0001,
-                            epsrel=0.0001,
+                            epsabs=0.00001, #added 3 zeros
+                            epsrel=0.00001, #added 3 zeros
                         )
                         integral, error = cnlm
                         coeffs[iZ, n, l, im] = integral
@@ -1047,10 +1047,10 @@ class SoapTests(TestBaseClass, unittest.TestCase):
                                 value *= prefactor
                                 numerical_power_spectrum.append(value)
 
-        # print("Numerical: {}".format(numerical_power_spectrum))
-        # print("Analytical: {}".format(analytical_power_spectrum))
+        #print("Numerical: {}".format(numerical_power_spectrum))
+        #print("Analytical: {}".format(analytical_power_spectrum))
 
-        self.assertTrue(np.allclose(numerical_power_spectrum, analytical_power_spectrum, atol=1e-15, rtol=0.01))
+        self.assertTrue(np.allclose(numerical_power_spectrum, analytical_power_spectrum, atol=1e-10, rtol=0.01))
 
     def test_padding(self):
         """Tests that the padding used in constructing extended systems is
