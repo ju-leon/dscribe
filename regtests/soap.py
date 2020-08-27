@@ -65,17 +65,17 @@ class SoapTests(TestBaseClass, unittest.TestCase):
         """
         # Invalid gaussian width
         with self.assertRaises(ValueError):
-            SOAP(species=[-1, 2], rcut=5, sigma=0, nmax=5, lmax=5, periodic=True)
+            SOAP(species=[-1, 2], rcut=5, sigma=0, nmax=5, lmax=1, periodic=True)
         with self.assertRaises(ValueError):
-            SOAP(species=[-1, 2], rcut=5, sigma=-1, nmax=5, lmax=5, periodic=True)
+            SOAP(species=[-1, 2], rcut=5, sigma=-1, nmax=5, lmax=1, periodic=True)
 
         # Invalid rcut
         with self.assertRaises(ValueError):
-            SOAP(species=[-1, 2], rcut=0.5, sigma=0, nmax=5, lmax=5, periodic=True)
+            SOAP(species=[-1, 2], rcut=0.5, sigma=0, nmax=5, lmax=1, periodic=True)
 
         # Invalid lmax
         with self.assertRaises(ValueError):
-            SOAP(species=[-1, 2], rcut=0.5, sigma=0, nmax=5, lmax=10, rbf="gto", periodic=True)
+            SOAP(species=[-1, 2], rcut=0.5, sigma=0, nmax=5, lmax=30, rbf="gto", periodic=True)
 
         # Invalid nmax
         with self.assertRaises(ValueError):
@@ -100,7 +100,7 @@ class SoapTests(TestBaseClass, unittest.TestCase):
             species=[1, 8],
             rcut=3,
             nmax=3,
-            lmax=0,
+            lmax=1,
             sparse=False,
         )
         nfeat1 = a.get_number_of_features()
@@ -136,7 +136,7 @@ class SoapTests(TestBaseClass, unittest.TestCase):
         pos = [[0.1, 0.1, 0.1]]
 
         # GTO
-        desc = SOAP(species=[1, 8], rbf="gto", crossover=True, rcut=3, nmax=5, lmax=5, periodic=False)
+        desc = SOAP(species=[1, 8], rbf="gto", crossover=True, rcut=3, nmax=5, lmax=1, periodic=False)
         n_elem_feat = desc.get_number_of_element_features()
         full_output = desc.create(H2O, positions=pos)
         desc.crossover = False
@@ -145,7 +145,7 @@ class SoapTests(TestBaseClass, unittest.TestCase):
         self.assertTrue(np.array_equal(full_output[:, 2*n_elem_feat:], partial_output[:, n_elem_feat:]))
 
         # Polynomial
-        desc = SOAP(species=[1, 8], rbf="polynomial", crossover=True, rcut=3, nmax=5, lmax=5, periodic=False)
+        desc = SOAP(species=[1, 8], rbf="polynomial", crossover=True, rcut=3, nmax=5, lmax=1, periodic=False)
         n_elem_feat = desc.get_number_of_element_features()
         full_output = desc.create(H2O, pos)
         desc.crossover = False
@@ -158,7 +158,7 @@ class SoapTests(TestBaseClass, unittest.TestCase):
         """
         # With crossover
         species = ["H", "O", "C"]
-        desc = SOAP(species=species, rbf="gto", crossover=True, rcut=3, nmax=5, lmax=5, periodic=False)
+        desc = SOAP(species=species, rbf="gto", crossover=True, rcut=3, nmax=5, lmax=1, periodic=False)
 
         # Symbols
         loc_hh = desc.get_location(("H", "H"))
@@ -213,7 +213,7 @@ class SoapTests(TestBaseClass, unittest.TestCase):
         """
         # With crossover
         species = ["H", "O", "C"]
-        desc = SOAP(species=species, rbf="gto", crossover=False, rcut=3, nmax=5, lmax=5, periodic=False)
+        desc = SOAP(species=species, rbf="gto", crossover=False, rcut=3, nmax=5, lmax=1, periodic=False)
 
         # Symbols
         loc_hh = desc.get_location(("H", "H"))
@@ -253,7 +253,7 @@ class SoapTests(TestBaseClass, unittest.TestCase):
     def test_multiple_species(self):
         """Tests multiple species are handled correctly.
         """
-        lmax = 5
+        lmax = 1
         nmax = 5
         species = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
         desc = SOAP(species=species, rcut=5, nmax=nmax, lmax=lmax, periodic=False, sparse=False)
@@ -301,7 +301,7 @@ class SoapTests(TestBaseClass, unittest.TestCase):
         """Tests that when no positions are given, the SOAP for the full
         structure is calculated.
         """
-        lmax = 5
+        lmax = 1
         nmax = 5
         desc = SOAP(species=[1, 8], rcut=5, nmax=nmax, lmax=lmax, periodic=True)
 
@@ -312,12 +312,12 @@ class SoapTests(TestBaseClass, unittest.TestCase):
         """Tests the sparse matrix creation.
         """
         # Dense
-        desc = SOAP(species=[1, 8], rcut=5, nmax=5, lmax=5, periodic=True, sparse=False)
+        desc = SOAP(species=[1, 8], rcut=5, nmax=5, lmax=1, periodic=True, sparse=False)
         vec = desc.create(H2O)
         self.assertTrue(type(vec) == np.ndarray)
 
         # Sparse
-        desc = SOAP(species=[1, 8], rcut=5, nmax=5, lmax=5, periodic=True, sparse=True)
+        desc = SOAP(species=[1, 8], rcut=5, nmax=5, lmax=1, periodic=True, sparse=True)
         vec = desc.create(H2O)
         self.assertTrue(type(vec) == scipy.sparse.coo_matrix)
 
@@ -367,7 +367,7 @@ class SoapTests(TestBaseClass, unittest.TestCase):
             species=[6, 7, 8],
             rcut=5,
             nmax=3,
-            lmax=0,
+            lmax=1,
             sigma=1,
             periodic=False,
             crossover=True,
@@ -447,7 +447,7 @@ class SoapTests(TestBaseClass, unittest.TestCase):
             species=[6, 7, 8],
             rcut=5,
             nmax=3,
-            lmax=0,
+            lmax=1,
             sigma=1,
             periodic=False,
             crossover=True,
@@ -640,7 +640,7 @@ class SoapTests(TestBaseClass, unittest.TestCase):
             desc = SOAP(
                 species=system.get_atomic_numbers(),
                 rcut=8.0,
-                lmax=0,
+                lmax=1,
                 nmax=5,
                 rbf="gto",
                 periodic=False,
@@ -658,7 +658,7 @@ class SoapTests(TestBaseClass, unittest.TestCase):
             desc = SOAP(
                 species=system.get_atomic_numbers(),
                 rcut=8.0,
-                lmax=2,
+                lmax=1,
                 nmax=1,
                 rbf="polynomial",
                 periodic=False,
@@ -682,7 +682,7 @@ class SoapTests(TestBaseClass, unittest.TestCase):
             species=[1, 6, 8],
             rcut=5,
             nmax=3,
-            lmax=5,
+            lmax=1,
             periodic=False,
             crossover=True,
             average=True,
@@ -695,7 +695,7 @@ class SoapTests(TestBaseClass, unittest.TestCase):
             species=[1, 6, 8],
             rcut=5,
             nmax=3,
-            lmax=5,
+            lmax=1,
             periodic=False,
             crossover=True,
             average=False,
@@ -723,7 +723,7 @@ class SoapTests(TestBaseClass, unittest.TestCase):
             species=[1, 6, 8],
             rcut=5,
             nmax=3,
-            lmax=5,
+            lmax=1,
             periodic=False,
             crossover=True,
             sparse=False
@@ -773,7 +773,7 @@ class SoapTests(TestBaseClass, unittest.TestCase):
         sigma = 0.15
         rcut = 2.0
         nmax = 2
-        lmax = 3
+        lmax = 1
         soap = SOAP(species=[1], lmax=lmax, nmax=nmax, sigma=sigma, rcut=rcut, crossover=True, sparse=False)
         alphas = np.reshape(soap._alphas, [20, nmax])
         betas = np.reshape(soap._betas, [20, nmax, nmax])
@@ -813,7 +813,7 @@ class SoapTests(TestBaseClass, unittest.TestCase):
         sigma = 0.55
         rcut = 2.0
         nmax = 2
-        lmax = 1
+        lmax = 10
 
         # Limits for radius
         r1 = 0.
@@ -901,8 +901,8 @@ class SoapTests(TestBaseClass, unittest.TestCase):
                             lambda r: t2,
                             lambda r, theta: p1,
                             lambda r, theta: p2,
-                            epsabs=0.00000001, # added 3 zeros
-                            epsrel=0.00000001, # added 3 zeros
+                            epsabs=0.000000001,
+                            epsrel=0.000000001,
                         )
                         integral, error = cnlm
                         coeffs[iZ, n, l, im] = integral
@@ -922,7 +922,7 @@ class SoapTests(TestBaseClass, unittest.TestCase):
                                     numerical_power_spectrum.append(value)
 
         print("Numerical: {}".format(numerical_power_spectrum))
-        print("Analytical: {}".format(analytical_power_spectrum)) ##
+        print("Analytical: {}".format(analytical_power_spectrum))
 
         self.assertTrue(np.allclose(numerical_power_spectrum, analytical_power_spectrum, atol=1e-10, rtol=0.01))
 
@@ -934,7 +934,7 @@ class SoapTests(TestBaseClass, unittest.TestCase):
         sigma = 0.55
         rcut = 2.0
         nmax = 2
-        lmax = 2
+        lmax = 1
 
         # Limits for radius
         r1 = 0.
@@ -1028,8 +1028,8 @@ class SoapTests(TestBaseClass, unittest.TestCase):
                             lambda r: t2,
                             lambda r, theta: p1,
                             lambda r, theta: p2,
-                            epsabs=0.00001, #added 3 zeros
-                            epsrel=0.00001, #added 3 zeros
+                            epsabs=0.0001,
+                            epsrel=0.0001,
                         )
                         integral, error = cnlm
                         coeffs[iZ, n, l, im] = integral
@@ -1047,10 +1047,10 @@ class SoapTests(TestBaseClass, unittest.TestCase):
                                 value *= prefactor
                                 numerical_power_spectrum.append(value)
 
-        #print("Numerical: {}".format(numerical_power_spectrum))
-        #print("Analytical: {}".format(analytical_power_spectrum))
+        # print("Numerical: {}".format(numerical_power_spectrum))
+        # print("Analytical: {}".format(analytical_power_spectrum))
 
-        self.assertTrue(np.allclose(numerical_power_spectrum, analytical_power_spectrum, atol=1e-10, rtol=0.01))
+        self.assertTrue(np.allclose(numerical_power_spectrum, analytical_power_spectrum, atol=1e-15, rtol=0.01))
 
     def test_padding(self):
         """Tests that the padding used in constructing extended systems is
@@ -1071,7 +1071,7 @@ class SoapTests(TestBaseClass, unittest.TestCase):
 
                     # Create descriptor generators
                     soap_generator = SOAP(
-                        rcut=rcut, nmax=4, lmax=4, sigma=sigma, species=["Ni", "Ti"], periodic=True
+                        rcut=rcut, nmax=4, lmax=2, sigma=sigma, species=["Ni", "Ti"], periodic=True
                     )
 
                     # Define unit cell
