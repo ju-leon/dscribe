@@ -1015,7 +1015,7 @@ void getC(double* C, double* preCoef, double* x, double* y, double* z,double* r2
 //  }}
 
   if(lMax > 9) {
-  for(restOfLs = 10; restOfLs <= lMax; restOfLs++){	 
+  for(int restOfLs = 10; restOfLs <= lMax; restOfLs++){	 
   LNsNs=restOfLs*NsNs; LNs=restOfLs*Ns; // OBS!!!!!! lMax > 9 Case!
   for(int k = 0; k < Ns; k++){
     for(int i = 0; i < Asize; i++){exes[i] = exp(aOa[LNs + k]*r2[i]);}//exponents
