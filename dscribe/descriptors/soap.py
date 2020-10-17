@@ -226,7 +226,7 @@ class SOAP(Descriptor):
 
         return output
 
-    def derivatives(self, system, positions=None, include=None, exclude=None, method="numerical",)
+    def derivatives(self, system, positions=None, include=None, exclude=None, method="numerical",):
         """Return the SOAP output for the given systems and given positions.
 
         Args:

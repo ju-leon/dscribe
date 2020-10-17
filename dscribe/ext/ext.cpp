@@ -19,6 +19,7 @@ limitations under the License.
 #include <pybind11/stl.h>    // Enables automatic type conversion from C++ containers to python
 #include "celllist.h"
 #include "soapGTO.h"
+#include "soapGTODevX.h"
 #include "soapGeneral.h"
 
 namespace py = pybind11;

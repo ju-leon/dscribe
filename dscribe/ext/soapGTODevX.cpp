@@ -20,7 +20,7 @@ limitations under the License.
 #include <string>
 #include <map>
 #include <set>
-#include "soapGTO.h"
+#include "soapGTODevX.h"
 #include "celllist.h"
 
 #define PI2 9.86960440108936
@@ -755,7 +755,7 @@ void getCfactors(double* preCoef, int Asize, double* x,double* x2, double* x4, d
   }
 }
 //================================================================
-void getC(double* C, double* preCoef, double* CDev, double* x, double* y, double* z,double* r2, double* bOa, double* aOa, double* exes,  int totalAN, int Asize, int Ns, int Ntypes, int lMax, int posI, int typeJ){
+void getC(double* CDev, double* C, double* preCoef,  double* x, double* y, double* z,double* r2, double* bOa, double* aOa, double* exes,  int totalAN, int Asize, int Ns, int Ntypes, int lMax, int posI, int typeJ, const vector<int> &indices){
 
   if(Asize == 0){return;}
   double sumMe = 0; int NsNs = Ns*Ns;  int NsJ = ((lMax+1)*(lMax+1))*Ns*typeJ; int LNsNs;
@@ -770,11 +770,11 @@ void getC(double* C, double* preCoef, double* CDev, double* x, double* y, double
     
   //dev l=0
     for(int i = 0; i < Asize; i++){
+     for(int k = 0; k < Ns; k++){
        for(int n = 0; n < Ns; n++){
-         for(int n = 0; n < Ns; n++){
-	    CDev[NsTsI*Asize + NsJ*Asize + n*Asize + i] += bOa[n*Ns + k]*(-2)*x[i]*aOa[k]*exp(aOa[k]*r2[i]);
-	 }
+	    CDev[NsTsI*totalAN + NsJ*totalAN + n*totalAN + indices[i]] += bOa[n*Ns + k]*(-2)*x[i]*aOa[k]*exp(aOa[k]*r2[i]);
        }
+     }
     }
 
    if(lMax > 0) { LNsNs=NsNs; LNs=Ns;
@@ -1484,7 +1484,7 @@ void getPNoCross(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMax
 /**
  * Used to calculate the partial power spectrum derivative without crossover.
  */
-void getPNoCrossDev(double* soapMatDevX, double* Cnnd, double* Cdev, int Ns, int Ts, int Hs, int lMax){
+  void getPNoCrossDevX(double* soapMatDevX,double* Cdev, double* Cnnd,  int Ns, int Ts, int Hs, int lMax){
   int NsTs100 = Ns*Ts*((lMax+1)*(lMax+1)); // Used to be NsTs100 = Ns*Ts*100, but 100 is a waste of memory if not lMax = 9, and can't do over that, so changed.
   int Ns100 = Ns*((lMax+1)*(lMax+1));
   int NsNs = (Ns*(Ns+1))/2;
@@ -1502,14 +1502,13 @@ void getPNoCrossDev(double* soapMatDevX, double* Cnnd, double* Cdev, int Ns, int
   double cs0=2.4674011003; double cs1=7.4022033011; double cs2=7.4022033005;
   // SUM M's UP!
   double prel0 = PI*sqrt(8.0/(1.0));
-  for(int a = 0; a < Asize; a++){
+  for(int a = 0; a < totalAN; a++){
     for(int i = 0; i < Hs; i++){
       for(int j = 0; j < Ts; j++){
         shiftN = 0;
         for(int k = 0; k < Ns; k++){
           for(int kd = k; kd < Ns; kd++){
-            soapMat[NsNsLmaxTs*i*Asize+ NsNsLmax*j*Asize+ 0*Asize +shiftN*Asize + a] = prel0*(
-              cs0*Cnnd[NsTs100*i + Ns100*j + 0 + k]*CDev[NsTs100*i*Asize + Ns100*j*Asize + 0*Ns*Asize + kd*Asize + a]);
+            soapMatDevX[NsNsLmaxTs*i*totalAN+ NsNsLmax*j*totalAN+ 0*totalAN +shiftN*totalAN + a] = prel0*(cs0*Cnnd[NsTs100*i + Ns100*j + 0 + k]*CDev[NsTs100*i*Asize + Ns100*j*Asize + 0*Ns*Asize + kd*Asize + a]);
             shiftN++;
           }
         }
@@ -1522,7 +1521,7 @@ void getPNoCrossDev(double* soapMatDevX, double* Cnnd, double* Cdev, int Ns, int
         shiftN = 0;
         for(int k = 0; k < Ns; k++){
           for(int kd = k; kd < Ns; kd++){
-            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ NsNs + shiftN] = prel1*(
+            soapMatDevX[NsNsLmaxTs*i+NsNsLmax*j+ NsNs + shiftN] = prel1*(
               cs1*Cnnd[NsTs100*i + Ns100*j + 1*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 1*Ns + kd]
              +cs2*Cnnd[NsTs100*i + Ns100*j + 2*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 2*Ns + kd]
              +cs2*Cnnd[NsTs100*i + Ns100*j + 3*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 3*Ns + kd]);
@@ -1538,7 +1537,7 @@ void getPNoCrossDev(double* soapMatDevX, double* Cnnd, double* Cdev, int Ns, int
         shiftN = 0;
         for(int k = 0; k < Ns; k++){
           for(int kd = k; kd < Ns; kd++){
-            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 2*NsNs + shiftN] = prel2*(
+            soapMatDevX[NsNsLmaxTs*i+NsNsLmax*j+ 2*NsNs + shiftN] = prel2*(
               PI3*Cnnd[NsTs100*i + Ns100*j + 4*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 4*Ns + kd]
              +PI3*Cnnd[NsTs100*i + Ns100*j + 5*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 5*Ns + kd]
              +PI3*Cnnd[NsTs100*i + Ns100*j + 6*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 6*Ns + kd]
@@ -1556,7 +1555,7 @@ void getPNoCrossDev(double* soapMatDevX, double* Cnnd, double* Cdev, int Ns, int
         shiftN = 0;
         for(int k = 0; k < Ns; k++){
           for(int kd = k; kd < Ns; kd++){
-            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 3*NsNs + shiftN] = prel3*(
+            soapMatDevX[NsNsLmaxTs*i+NsNsLmax*j+ 3*NsNs + shiftN] = prel3*(
               PI3*Cnnd[NsTs100*i + Ns100*j + 9*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 9*Ns + kd]
              +PI3*Cnnd[NsTs100*i + Ns100*j + 10*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 10*Ns + kd]
              +PI3*Cnnd[NsTs100*i + Ns100*j + 11*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 11*Ns + kd]
@@ -1576,7 +1575,7 @@ void getPNoCrossDev(double* soapMatDevX, double* Cnnd, double* Cdev, int Ns, int
         shiftN = 0;
         for(int k = 0; k < Ns; k++){
           for(int kd = k; kd < Ns; kd++){
-            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 4*NsNs + shiftN] = prel4*(
+            soapMatDevX[NsNsLmaxTs*i+NsNsLmax*j+ 4*NsNs + shiftN] = prel4*(
               PI3*Cnnd[NsTs100*i + Ns100*j + 16*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 16*Ns + kd]
              +PI3*Cnnd[NsTs100*i + Ns100*j + 17*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 17*Ns + kd]
              +PI3*Cnnd[NsTs100*i + Ns100*j + 18*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 18*Ns + kd]
@@ -1598,7 +1597,7 @@ void getPNoCrossDev(double* soapMatDevX, double* Cnnd, double* Cdev, int Ns, int
         shiftN = 0;
         for(int k = 0; k < Ns; k++){
           for(int kd = k; kd < Ns; kd++){
-            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 5*NsNs + shiftN] = prel5*(
+            soapMatDevX[NsNsLmaxTs*i+NsNsLmax*j+ 5*NsNs + shiftN] = prel5*(
               PI3*Cnnd[NsTs100*i + Ns100*j + 25*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 25*Ns + kd]
              +PI3*Cnnd[NsTs100*i + Ns100*j + 26*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 26*Ns + kd]
              +PI3*Cnnd[NsTs100*i + Ns100*j + 27*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 27*Ns + kd]
@@ -1622,7 +1621,7 @@ void getPNoCrossDev(double* soapMatDevX, double* Cnnd, double* Cdev, int Ns, int
         shiftN = 0;
         for(int k = 0; k < Ns; k++){
           for(int kd = k; kd < Ns; kd++){
-            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 6*NsNs + shiftN] = prel6*(
+            soapMatDevX[NsNsLmaxTs*i+NsNsLmax*j+ 6*NsNs + shiftN] = prel6*(
               PI3*Cnnd[NsTs100*i + Ns100*j + 36*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 36*Ns + kd]
              +PI3*Cnnd[NsTs100*i + Ns100*j + 37*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 37*Ns + kd]
              +PI3*Cnnd[NsTs100*i + Ns100*j + 38*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 38*Ns + kd]
@@ -1648,7 +1647,7 @@ void getPNoCrossDev(double* soapMatDevX, double* Cnnd, double* Cdev, int Ns, int
         shiftN = 0;
         for(int k = 0; k < Ns; k++){
           for(int kd = k; kd < Ns; kd++){
-            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 7*NsNs + shiftN] = prel7*(
+            soapMatDevX[NsNsLmaxTs*i+NsNsLmax*j+ 7*NsNs + shiftN] = prel7*(
               PI3*Cnnd[NsTs100*i + Ns100*j + 49*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 49*Ns + kd]
              +PI3*Cnnd[NsTs100*i + Ns100*j + 50*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 50*Ns + kd]
              +PI3*Cnnd[NsTs100*i + Ns100*j + 51*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 51*Ns + kd]
@@ -1676,7 +1675,7 @@ void getPNoCrossDev(double* soapMatDevX, double* Cnnd, double* Cdev, int Ns, int
         shiftN = 0;
         for(int k = 0; k < Ns; k++){
           for(int kd = k; kd < Ns; kd++){
-            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 8*NsNs + shiftN] = prel8*(
+            soapMatDevX[NsNsLmaxTs*i+NsNsLmax*j+ 8*NsNs + shiftN] = prel8*(
               PI3*Cnnd[NsTs100*i + Ns100*j + 64*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 64*Ns + kd]
              +PI3*Cnnd[NsTs100*i + Ns100*j + 65*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 65*Ns + kd]
              +PI3*Cnnd[NsTs100*i + Ns100*j + 66*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 66*Ns + kd]
@@ -1706,7 +1705,7 @@ void getPNoCrossDev(double* soapMatDevX, double* Cnnd, double* Cdev, int Ns, int
         shiftN = 0;
         for(int k = 0; k < Ns; k++){
           for(int kd = k; kd < Ns; kd++){
-            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 9*NsNs + shiftN] = prel9*(
+            soapMatDevX[NsNsLmaxTs*i+NsNsLmax*j+ 9*NsNs + shiftN] = prel9*(
               PI3*Cnnd[NsTs100*i + Ns100*j + 81*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 81*Ns + kd]
              +PI3*Cnnd[NsTs100*i + Ns100*j + 82*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 82*Ns + kd]
              +PI3*Cnnd[NsTs100*i + Ns100*j + 83*Ns + k]*Cnnd[NsTs100*i + Ns100*j + 83*Ns + kd]
@@ -1743,7 +1742,7 @@ void getPNoCrossDev(double* soapMatDevX, double* Cnnd, double* Cdev, int Ns, int
             for(int buffShift = 100; buffShift < 121; buffShift++){
               buffDouble += PI3*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
 	    }
-            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 10*NsNs + shiftN] = prel10*buffDouble;
+            soapMatDevX[NsNsLmaxTs*i+NsNsLmax*j+ 10*NsNs + shiftN] = prel10*buffDouble;
             shiftN++;
           }
         }
@@ -1761,7 +1760,7 @@ void getPNoCrossDev(double* soapMatDevX, double* Cnnd, double* Cdev, int Ns, int
             for(int buffShift = 11*11; buffShift < 12*12; buffShift++){
               buffDouble += PI3*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
 	    }
-            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 11*NsNs + shiftN] = prel11*buffDouble;
+            soapMatDevX[NsNsLmaxTs*i+NsNsLmax*j+ 11*NsNs + shiftN] = prel11*buffDouble;
             shiftN++;
           }
         }
@@ -1780,7 +1779,7 @@ void getPNoCrossDev(double* soapMatDevX, double* Cnnd, double* Cdev, int Ns, int
             for(int buffShift = 12*12; buffShift < 13*13; buffShift++){
               buffDouble += PI3*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
 	    }
-            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 12*NsNs + shiftN] = prel12*buffDouble;
+            soapMatDevX[NsNsLmaxTs*i+NsNsLmax*j+ 12*NsNs + shiftN] = prel12*buffDouble;
             shiftN++;
           }
         }
@@ -1799,7 +1798,7 @@ void getPNoCrossDev(double* soapMatDevX, double* Cnnd, double* Cdev, int Ns, int
             for(int buffShift = 13*13; buffShift < 14*14; buffShift++){
               buffDouble += PI3*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
 	    }
-            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 13*NsNs + shiftN] = prel13*buffDouble;
+            soapMatDevX[NsNsLmaxTs*i+NsNsLmax*j+ 13*NsNs + shiftN] = prel13*buffDouble;
             shiftN++;
           }
         }
@@ -1818,7 +1817,7 @@ void getPNoCrossDev(double* soapMatDevX, double* Cnnd, double* Cdev, int Ns, int
             for(int buffShift = 14*14; buffShift < 15*15; buffShift++){
               buffDouble += PI3*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
 	    }
-            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 14*NsNs + shiftN] = prel14*buffDouble;
+            soapMatDevX[NsNsLmaxTs*i+NsNsLmax*j+ 14*NsNs + shiftN] = prel14*buffDouble;
             shiftN++;
           }
         }
@@ -1837,7 +1836,7 @@ void getPNoCrossDev(double* soapMatDevX, double* Cnnd, double* Cdev, int Ns, int
             for(int buffShift = 15*15; buffShift < 16*16; buffShift++){
               buffDouble += PI3*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
 	    }
-            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 15*NsNs + shiftN] = prel15*buffDouble;
+            soapMatDevX[NsNsLmaxTs*i+NsNsLmax*j+ 15*NsNs + shiftN] = prel15*buffDouble;
             shiftN++;
           }
         }
@@ -1856,7 +1855,7 @@ void getPNoCrossDev(double* soapMatDevX, double* Cnnd, double* Cdev, int Ns, int
             for(int buffShift = 16*16; buffShift < 17*17; buffShift++){
               buffDouble += PI3*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
 	    }
-            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 16*NsNs + shiftN] = prel16*buffDouble;
+            soapMatDevX[NsNsLmaxTs*i+NsNsLmax*j+ 16*NsNs + shiftN] = prel16*buffDouble;
             shiftN++;
           }
         }
@@ -1875,7 +1874,7 @@ void getPNoCrossDev(double* soapMatDevX, double* Cnnd, double* Cdev, int Ns, int
             for(int buffShift = 17*17; buffShift < 18*18; buffShift++){
               buffDouble += PI3*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
 	    }
-            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 17*NsNs + shiftN] = prel17*buffDouble;
+            soapMatDevX[NsNsLmaxTs*i+NsNsLmax*j+ 17*NsNs + shiftN] = prel17*buffDouble;
             shiftN++;
           }
         }
@@ -1894,7 +1893,7 @@ void getPNoCrossDev(double* soapMatDevX, double* Cnnd, double* Cdev, int Ns, int
             for(int buffShift = 18*18; buffShift < 19*19; buffShift++){
               buffDouble += PI3*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
 	    }
-            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 18*NsNs + shiftN] = prel18*buffDouble;
+            soapMatDevX[NsNsLmaxTs*i+NsNsLmax*j+ 18*NsNs + shiftN] = prel18*buffDouble;
             shiftN++;
           }
         }
@@ -1913,7 +1912,7 @@ void getPNoCrossDev(double* soapMatDevX, double* Cnnd, double* Cdev, int Ns, int
             for(int buffShift = 19*19; buffShift < 20*20; buffShift++){
               buffDouble += PI3*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + k]*Cnnd[NsTs100*i + Ns100*j + buffShift*Ns + kd];
 	    }
-            soapMat[NsNsLmaxTs*i+NsNsLmax*j+ 19*NsNs + shiftN] = prel19*buffDouble;
+            soapMatDevX[NsNsLmaxTs*i+NsNsLmax*j+ 19*NsNs + shiftN] = prel19*buffDouble;
             shiftN++;
           }
         }
@@ -2542,10 +2541,9 @@ void soapGTODevX(py::array_t<double> cArr, py::array_t<double> positions, py::ar
 
 
   double* cnnd = (double*) malloc(((lMax+1)*(lMax+1))*Nt*Ns*Hs*sizeof(double));
-  double* cdev = (double*) malloc(totalAN*((lMax+1)*(lMax+1))*Nt*Ns*Hs*sizeof(double));
-  for(int i = 0; i < ((lMax+1)*(lMax+1))*Nt*Ns*Hs; i++){cnnd[i] = 0.0;
-//	  printf("cnnd: %f\n", cnnd[i])
-		  ;}
+  double* cdevX = (double*) malloc(totalAN*((lMax+1)*(lMax+1))*Nt*Ns*Hs*sizeof(double));
+  for(int i = 0; i < ((lMax+1)*(lMax+1))*Nt*Ns*Hs; i++){cnnd[i] = 0.0;}
+  for(int i = 0; i < ((lMax+1)*(lMax+1))*Nt*Ns*Hs*totalAN; i++){cdevX[i] = 0.0;}
 
   // Initialize binning
   CellList cellList(positions, rCut+cutoffPadding);
@@ -2586,6 +2584,7 @@ void soapGTODevX(py::array_t<double> cArr, py::array_t<double> positions, py::ar
 
       // j is the internal index for this atomic number
       int j = ZIndexMap[ZIndexPair.first];
+      int* collectInd[]
       int n_neighbours = ZIndexPair.second.size();
 
       // Save the neighbour distances into the arrays dx, dy and dz
@@ -2593,7 +2592,7 @@ void soapGTODevX(py::array_t<double> cArr, py::array_t<double> positions, py::ar
 
       getRsZs(dx,x2,x4,x6,x8,x10,x12,x14,x16,x18, dy,y2,y4,y6,y8,y10,y12,y14,y16,y18, dz, r2, r4, r6, r8,r10,r12,r14,r16,r18, z2, z4, z6, z8,z10,z12,z14,z16,z18, n_neighbours,lMax);
       getCfactors(preCoef, n_neighbours, dx,x2, x4, x6, x8,x10,x12,x14,x16,x18, dy,y2, y4, y6, y8,y10,y12,y14,y16,y18, dz, z2, z4, z6, z8,z10,z12,z14,z16,z18, r2, r4, r6, r8,r10,r12,r14,r16,r18, totalAN, lMax); // Erased tn
-      getC(cnnd, preCoef,cdev, dx, dy, dz, r2, bOa, aOa, exes, totalAN, n_neighbours, Ns, Nt, lMax, i, j); //erased tn and Nx
+      getC(cdevX,cnnd, preCoef, dx, dy, dz, r2, bOa, aOa, exes, totalAN, n_neighbours, Ns, Nt, lMax, i, j, ZIndexPair.second); //erased tn and Nx
     }
   }
 
@@ -2644,7 +2643,7 @@ void soapGTODevX(py::array_t<double> cArr, py::array_t<double> positions, py::ar
   if (crossover) {
     getPCrossOver(c, cnnd, Ns, Nt, Hs, lMax);
   } else {
-    getPNoCross(c, cnnd, Ns, Nt, Hs, lMax);
+    getPNoCrossDevX(c,cdevX, cnnd, Ns, Nt, Hs, lMax);
   };
   free(cnnd);
  
