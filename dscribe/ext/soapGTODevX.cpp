@@ -28,12 +28,12 @@ limitations under the License.
 #define PI3 31.00627668029982 
 #define PIHalf 1.57079632679490
 //===========================================================
-inline int getCrosNum(int n)
+inline int getCrosNumD(int n)
 {
   return n*(n+1)/2;
 }
 //================================================================
-inline void getDeltas(double* x, double* y, double* z, const py::array_t<double> &positions, const double ix, const double iy, const double iz, const vector<int> &indices){
+inline void getDeltaD(double* x, double* y, double* z, const py::array_t<double> &positions, const double ix, const double iy, const double iz, const vector<int> &indices){
 
     int count = 0;
     auto pos = positions.unchecked<2>();
@@ -46,7 +46,7 @@ inline void getDeltas(double* x, double* y, double* z, const py::array_t<double>
 }
 
 //================================================================
-inline void getRsZs(double* x,double* x2,double* x4,double* x6,double* x8,double* x10,double* x12,double* x14,double* x16,double* x18, double* y,double* y2,double* y4,double* y6,double* y8,double* y10,double* y12,double* y14,double* y16,double* y18, double* z,double* r2,double* r4,double* r6,double* r8,double* r10,double* r12,double* r14,double* r16,double* r18,double* z2,double* z4,double* z6,double* z8,double* z10,double* z12,double* z14,double* z16,double* z18, int size, int lMax){
+inline void getRsZsD(double* x,double* x2,double* x4,double* x6,double* x8,double* x10,double* x12,double* x14,double* x16,double* x18, double* y,double* y2,double* y4,double* y6,double* y8,double* y10,double* y12,double* y14,double* y16,double* y18, double* z,double* r2,double* r4,double* r6,double* r8,double* r10,double* r12,double* r14,double* r16,double* r18,double* z2,double* z4,double* z6,double* z8,double* z10,double* z12,double* z14,double* z16,double* z18, int size, int lMax){
   for(int i = 0; i < size; i++){
 
     r2[i] = x[i]*x[i] + y[i]*y[i] + z[i]*z[i];
@@ -103,7 +103,7 @@ inline void getRsZs(double* x,double* x2,double* x4,double* x6,double* x8,double
   }
 }
 //================================================================
-void getAlphaBeta(double* aOa, double* bOa, double* alphas, double* betas, int Ns,int lMax, double oOeta, double oOeta3O2){
+void getAlphaBetaD(double* aOa, double* bOa, double* alphas, double* betas, int Ns,int lMax, double oOeta, double oOeta3O2){
 
   int  NsNs = Ns*Ns;
   double  oneO1alpha;  double  oneO1alpha2; double  oneO1alpha3;
@@ -306,7 +306,7 @@ void getAlphaBeta(double* aOa, double* bOa, double* alphas, double* betas, int N
   }
 }
 //================================================================
-void getCfactors(double* preCoef, int Asize, double* x,double* x2, double* x4, double* x6, double* x8, double* x10,double* x12,double* x14,double* x16,double* x18, double* y,double* y2, double* y4, double* y6, double* y8, double* y10,double* y12,double* y14,double* y16,double* y18, double* z, double* z2, double* z4, double* z6, double* z8, double* z10,double* z12,double* z14,double* z16,double* z18, double* r2, double* r4, double* r6, double* r8,double* r10,double* r12,double* r14,double* r16,double* r18,int totalAN, int lMax){
+void getCfactorsD(double* preCoef, int Asize, double* x,double* x2, double* x4, double* x6, double* x8, double* x10,double* x12,double* x14,double* x16,double* x18, double* y,double* y2, double* y4, double* y6, double* y8, double* y10,double* y12,double* y14,double* y16,double* y18, double* z, double* z2, double* z4, double* z6, double* z8, double* z10,double* z12,double* z14,double* z16,double* z18, double* r2, double* r4, double* r6, double* r8,double* r10,double* r12,double* r14,double* r16,double* r18,int totalAN, int lMax){
 
   for (int i = 0; i < Asize; i++) {
     if (lMax > 1){
@@ -755,7 +755,7 @@ void getCfactors(double* preCoef, int Asize, double* x,double* x2, double* x4, d
   }
 }
 //================================================================
-void getC(double* CDev, double* C, double* preCoef,  double* x, double* y, double* z,double* r2, double* bOa, double* aOa, double* exes,  int totalAN, int Asize, int Ns, int Ntypes, int lMax, int posI, int typeJ, const vector<int> &indices){
+void getCD(double* CDev, double* C, double* preCoef,  double* x, double* y, double* z,double* r2, double* bOa, double* aOa, double* exes,  int totalAN, int Asize, int Ns, int Ntypes, int lMax, int posI, int typeJ, const vector<int> &indices){
 
   if(Asize == 0){return;}
   double sumMe = 0; int NsNs = Ns*Ns;  int NsJ = ((lMax+1)*(lMax+1))*Ns*typeJ; int LNsNs;
@@ -1044,7 +1044,7 @@ void getC(double* CDev, double* C, double* preCoef,  double* x, double* y, doubl
 /**
  * Used to calculate the partial power spectrum without crossover.
  */
-void getPNoCross(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMax){
+void getPNoCrossD(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMax){
   int NsTs100 = Ns*Ts*((lMax+1)*(lMax+1)); // Used to be NsTs100 = Ns*Ts*100, but 100 is a waste of memory if not lMax = 9, and can't do over that, so changed.
   int Ns100 = Ns*((lMax+1)*(lMax+1));
   int NsNs = (Ns*(Ns+1))/2;
@@ -1484,7 +1484,7 @@ void getPNoCross(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMax
 /**
  * Used to calculate the partial power spectrum derivative without crossover.
  */
-  void getPNoCrossDevX(double* soapMatDevX,double* Cdev, double* Cnnd,  int Ns, int Ts, int Hs, int lMax){
+  void getPNoCrossDevX(double* soapMatDevX,double* Cdev, double* Cnnd,  int Ns, int Ts, int Hs, int lMax, int totalAN){
   int NsTs100 = Ns*Ts*((lMax+1)*(lMax+1)); // Used to be NsTs100 = Ns*Ts*100, but 100 is a waste of memory if not lMax = 9, and can't do over that, so changed.
   int Ns100 = Ns*((lMax+1)*(lMax+1));
   int NsNs = (Ns*(Ns+1))/2;
@@ -1508,7 +1508,7 @@ void getPNoCross(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMax
         shiftN = 0;
         for(int k = 0; k < Ns; k++){
           for(int kd = k; kd < Ns; kd++){
-            soapMatDevX[NsNsLmaxTs*i*totalAN+ NsNsLmax*j*totalAN+ 0*totalAN +shiftN*totalAN + a] = prel0*(cs0*Cnnd[NsTs100*i + Ns100*j + 0 + k]*CDev[NsTs100*i*Asize + Ns100*j*Asize + 0*Ns*Asize + kd*Asize + a]);
+            soapMatDevX[NsNsLmaxTs*i*totalAN+ NsNsLmax*j*totalAN+ 0*totalAN +shiftN*totalAN + a] = prel0*(cs0*Cnnd[NsTs100*i + Ns100*j + 0 + k]*Cdev[NsTs100*i*totalAN + Ns100*j*totalAN + 0*Ns*totalAN + kd*totalAN + a]);
             shiftN++;
           }
         }
@@ -1924,12 +1924,12 @@ void getPNoCross(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMax
 /**
  * Used to calculate the partial power spectrum.
  */
-void getPCrossOver(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMax){
+void getPCrossOverD(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMax){
   int NsTs100 = Ns*Ts*((lMax+1)*(lMax+1));
   int Ns100 = Ns*((lMax+1)*(lMax+1));
   int NsNs = (Ns*(Ns+1))/2;
   int NsNsLmax = NsNs*(lMax+1) ;
-  int NsNsLmaxTs = NsNsLmax*getCrosNum(Ts);
+  int NsNsLmaxTs = NsNsLmax*getCrosNumD(Ts);
   int shiftN = 0;
   int shiftT = 0;
 
@@ -2561,7 +2561,7 @@ void soapGTODevX(py::array_t<double> cArr, py::array_t<double> positions, py::ar
       ++i;
   };
 
-  getAlphaBeta(aOa,bOa,alphas,betas,Ns,lMax,oOeta, oOeta3O2);
+  getAlphaBetaD(aOa,bOa,alphas,betas,Ns,lMax,oOeta, oOeta3O2);
 
   // Loop through the centers
   for (int i = 0; i < Hs; i++) {
@@ -2584,15 +2584,14 @@ void soapGTODevX(py::array_t<double> cArr, py::array_t<double> positions, py::ar
 
       // j is the internal index for this atomic number
       int j = ZIndexMap[ZIndexPair.first];
-      int* collectInd[]
       int n_neighbours = ZIndexPair.second.size();
 
       // Save the neighbour distances into the arrays dx, dy and dz
-      getDeltas(dx, dy, dz, positions, ix, iy, iz, ZIndexPair.second);
+      getDeltaD(dx, dy, dz, positions, ix, iy, iz, ZIndexPair.second);
 
-      getRsZs(dx,x2,x4,x6,x8,x10,x12,x14,x16,x18, dy,y2,y4,y6,y8,y10,y12,y14,y16,y18, dz, r2, r4, r6, r8,r10,r12,r14,r16,r18, z2, z4, z6, z8,z10,z12,z14,z16,z18, n_neighbours,lMax);
-      getCfactors(preCoef, n_neighbours, dx,x2, x4, x6, x8,x10,x12,x14,x16,x18, dy,y2, y4, y6, y8,y10,y12,y14,y16,y18, dz, z2, z4, z6, z8,z10,z12,z14,z16,z18, r2, r4, r6, r8,r10,r12,r14,r16,r18, totalAN, lMax); // Erased tn
-      getC(cdevX,cnnd, preCoef, dx, dy, dz, r2, bOa, aOa, exes, totalAN, n_neighbours, Ns, Nt, lMax, i, j, ZIndexPair.second); //erased tn and Nx
+      getRsZsD(dx,x2,x4,x6,x8,x10,x12,x14,x16,x18, dy,y2,y4,y6,y8,y10,y12,y14,y16,y18, dz, r2, r4, r6, r8,r10,r12,r14,r16,r18, z2, z4, z6, z8,z10,z12,z14,z16,z18, n_neighbours,lMax);
+      getCfactorsD(preCoef, n_neighbours, dx,x2, x4, x6, x8,x10,x12,x14,x16,x18, dy,y2, y4, y6, y8,y10,y12,y14,y16,y18, dz, z2, z4, z6, z8,z10,z12,z14,z16,z18, r2, r4, r6, r8,r10,r12,r14,r16,r18, totalAN, lMax); // Erased tn
+      getCD(cdevX,cnnd, preCoef, dx, dy, dz, r2, bOa, aOa, exes, totalAN, n_neighbours, Ns, Nt, lMax, i, j, ZIndexPair.second); //erased tn and Nx
     }
   }
 
@@ -2641,9 +2640,9 @@ void soapGTODevX(py::array_t<double> cArr, py::array_t<double> positions, py::ar
   free(aOa);
 
   if (crossover) {
-    getPCrossOver(c, cnnd, Ns, Nt, Hs, lMax);
+    getPCrossOverD(c, cnnd, Ns, Nt, Hs, lMax);
   } else {
-    getPNoCrossDevX(c,cdevX, cnnd, Ns, Nt, Hs, lMax);
+    getPNoCrossDevX(c,cdevX, cnnd, Ns, Nt, Hs, lMax, totalAN);
   };
   free(cnnd);
  

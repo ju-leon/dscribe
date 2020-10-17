@@ -246,12 +246,15 @@ class SOAP(Descriptor):
         threshold = 0.001
         cutoff_padding = self._sigma*np.sqrt(-2*np.log(threshold))
         centers = positions
+        if centers == None:
+            centers = system.get_positions() 
 
-        if (type(include) == None) and (type(exclude) == None):
+
+        if (type(include) == type(None)) and (type(exclude) == type(None)):
             pass
-        elif (type(include) == None) and (type(exclude) != None):
+        elif (type(include) == type(None)) and (type(exclude) != type(None)):
             centers = system.get_positions()[exclude]
-        elif (type(include) != None) and (type(exclude) == None):
+        elif (type(include) != type(None)) and (type(exclude) == type(None)):
             centers = system.get_positions()[include]
         else:
             raise ValueError("please provide either include or exclude argument, not both")

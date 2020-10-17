@@ -76,6 +76,7 @@ extensions = [
             "dscribe/ext/ext.cpp",
             "dscribe/ext/celllist.cpp",
             "dscribe/ext/soapGTO.cpp",
+            "dscribe/ext/soapGTODevX.cpp",
             "dscribe/ext/soapGeneral.cpp",
         ],
         include_dirs=[

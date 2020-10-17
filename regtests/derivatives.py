@@ -74,7 +74,15 @@ H2 = Atoms(
 
 class SoapDerivativesTests(TestBaseClass, unittest.TestCase):
 
-    def test_analytical():
+    def test_constructor(self):
+        return
+    def test_number_of_features(self):
+        return
+    def test_sparse(self):
+        return
+    def test_symmetries(self):
+        return
+    def test_analytical(self):
         """Tests if the analytical soap derivatives run
         """
         a = SOAP(
@@ -86,7 +94,7 @@ class SoapDerivativesTests(TestBaseClass, unittest.TestCase):
         )
         atoms = a.create(H2)
 
-        derivatives = a.derivatives(H2, method = "analytical")
+        derivatives = a.derivatives(H2, method = "analytical", include=None, exclude=None)
 
         print(derivatives)
         print(derivatives.shape)
