@@ -226,6 +226,73 @@ class SOAP(Descriptor):
 
         return output
 
+    def derivatives(self, system, positions=None, include=None, exclude=None, method="numerical",)
+        """Return the SOAP output for the given systems and given positions.
+
+        Args:
+            system (:class:`ase.Atoms` or list of :class:`ase.Atoms`): One or
+                many atomic structures.
+            positions (list): Positions where to calculate SOAP. Can be
+                provided as cartesian positions or atomic indices. If no
+                positions are defined, the SOAP output will be created for all
+                atoms in the system. When calculating SOAP for multiple
+                systems, provide the positions as a list for each system.
+            include (list): indices of atoms to compute the derivatives on. 
+                Cannot be provided with argument exclude.
+            exclude (list): indices of atoms not to compute the derivatives on.
+                Cannot be provided with argument include.
+            method (str): 'numerical' or 'analytical' derivatives
+        """
+        threshold = 0.001
+        cutoff_padding = self._sigma*np.sqrt(-2*np.log(threshold))
+        centers = positions
+
+        if (type(include) == None) and (type(exclude) == None):
+            pass
+        elif (type(include) == None) and (type(exclude) != None):
+            centers = system.get_positions()[exclude]
+        elif (type(include) != None) and (type(exclude) == None):
+            centers = system.get_positions()[include]
+        else:
+            raise ValueError("please provide either include or exclude argument, not both")
+
+
+        if method == "numerical":
+            print("numerical derivatives not yet implemented")
+            return
+        elif method == "analytical":
+            atomic_numbers=None
+            crossover = self.crossover
+            n_atoms = len(system)
+            positions, Z_sorted, n_species, atomtype_lst = self.flatten_positions(system, atomic_numbers)
+            centers = np.array(centers)
+            n_centers = centers.shape[0]
+            centers = centers.flatten()
+            alphas = self._alphas.flatten()
+            betas = self._betas.flatten()
+            eta = self._eta
+            nmax = self._nmax
+            lmax = self._lmax
+            rcut = self._rcut
+      
+            # Determine shape
+            if crossover:
+                c = np.zeros(int((nmax*(nmax+1))/2)*(lmax+1)*int((n_species*(n_species + 1))/2)*n_centers*n_atoms, dtype=np.float64)
+                shape = (n_atoms, n_centers, int((nmax*(nmax+1))/2)*(lmax+1)*int((n_species*(n_species+1))/2))
+            else:
+                c = np.zeros(int((nmax*(nmax+1))/2)*(lmax+1)*int(n_species)*n_centers*n_atoms, dtype=np.float64)
+                shape = (n_atoms, n_centers, int((nmax*(nmax+1))/2)*(lmax+1)*n_species)
+
+            dscribe.ext.soap_gto_devX(c, positions, centers, alphas, betas, Z_sorted, rcut, cutoff_padding, n_atoms, n_species, nmax, lmax, n_centers, eta, crossover)
+            c = c.reshape(shape)
+            print(c)
+            return c
+
+        else:
+            raise ValueError("please choose method 'numerical' or 'analytical'")
+
+
+
     def create_single(self, system, positions=None):
         """Return the SOAP output for the given system and given positions.
 
@@ -630,7 +697,7 @@ class SOAP(Descriptor):
             condition = Z == atomtype
             pos_onetype = pos[condition]
             n_onetype = pos_onetype.shape[0]
-            pos_lst.append(pos_onetype)
+            append(pos_onetype)
             n_atoms_per_type.append(n_onetype)
         n_species = len(atomic_numbers_sorted)
         positions_sorted = np.concatenate(pos_lst).ravel()
