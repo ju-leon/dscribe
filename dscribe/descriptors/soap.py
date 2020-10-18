@@ -288,7 +288,6 @@ class SOAP(Descriptor):
 
             dscribe.ext.soap_gto_devX(c, positions, centers, alphas, betas, Z_sorted, rcut, cutoff_padding, n_atoms, n_species, nmax, lmax, n_centers, eta, crossover)
             c = c.reshape(shape)
-            print(c)
             return c
 
         else:

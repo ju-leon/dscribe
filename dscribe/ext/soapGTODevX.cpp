@@ -13,6 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 #include <stdio.h>
+#include <iostream>
 #include <stdlib.h>
 #include <math.h>
 #include <stdlib.h>
@@ -772,7 +773,10 @@ void getCD(double* CDev, double* C, double* preCoef,  double* x, double* y, doub
     for(int i = 0; i < Asize; i++){
      for(int k = 0; k < Ns; k++){
        for(int n = 0; n < Ns; n++){
-	    CDev[NsTsI*totalAN + NsJ*totalAN + n*totalAN + indices[i]] += bOa[n*Ns + k]*(-2)*x[i]*aOa[k]*exp(aOa[k]*r2[i]);
+	    CDev[NsTsI*totalAN + NsJ*totalAN + n*totalAN + indices[i]] += bOa[n*Ns + k]*(-2.0)*x[i]*aOa[k]*exp(aOa[k]*r2[i]);
+//	    std::cout << CDev[NsTsI*totalAN + NsJ*totalAN + n*totalAN + indices[i]]  << std::endl; 
+//	    std::cout << bOa[n*Ns + k]*(-2)*x[i]*aOa[k]*exp(aOa[k]*r2[i])  << std::endl; 
+//	    std::cout << bOa[n*Ns + k]*(-2.0)*x[i]*aOa[k]*exp(aOa[k]*r2[i])  << std::endl; 
        }
      }
     }
@@ -1498,6 +1502,7 @@ void getPNoCrossD(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMa
   // chemical environments, Phys. Rev. B 87, 184115 (2013). Here the square
   // root of the prefactor in the dot-product kernel is used, so that after a
   // possible dot-product the full prefactor is recovered.
+  std::cout << "START!" << std::endl;
 
   double cs0=2.4674011003; double cs1=7.4022033011; double cs2=7.4022033005;
   // SUM M's UP!
@@ -1509,6 +1514,7 @@ void getPNoCrossD(double* soapMat, double* Cnnd, int Ns, int Ts, int Hs, int lMa
         for(int k = 0; k < Ns; k++){
           for(int kd = k; kd < Ns; kd++){
             soapMatDevX[NsNsLmaxTs*i*totalAN+ NsNsLmax*j*totalAN+ 0*totalAN +shiftN*totalAN + a] = prel0*(cs0*Cnnd[NsTs100*i + Ns100*j + 0 + k]*Cdev[NsTs100*i*totalAN + Ns100*j*totalAN + 0*Ns*totalAN + kd*totalAN + a]);
+	    std::cout << soapMatDevX[NsNsLmaxTs*i*totalAN+ NsNsLmax*j*totalAN+ 0*totalAN +shiftN*totalAN + a]  << std::endl; 
             shiftN++;
           }
         }
@@ -2640,7 +2646,8 @@ void soapGTODevX(py::array_t<double> cArr, py::array_t<double> positions, py::ar
   free(aOa);
 
   if (crossover) {
-    getPCrossOverD(c, cnnd, Ns, Nt, Hs, lMax);
+//    getPCrossOverD(c, cnnd, Ns, Nt, Hs, lMax);
+    getPNoCrossDevX(c,cdevX, cnnd, Ns, Nt, Hs, lMax, totalAN);
   } else {
     getPNoCrossDevX(c,cdevX, cnnd, Ns, Nt, Hs, lMax, totalAN);
   };

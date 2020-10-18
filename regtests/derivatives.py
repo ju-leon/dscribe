@@ -88,17 +88,18 @@ class SoapDerivativesTests(TestBaseClass, unittest.TestCase):
         a = SOAP(
             species=[1],
             rcut=3,
-            nmax=3,
+            nmax=2,
             lmax=0,
             sparse=False,
         )
         atoms = a.create(H2)
 
-        derivatives = a.derivatives(H2, method = "analytical", include=None, exclude=None)
+#        derivatives = a.derivatives(H2, positions =[[0.0, 0.0, 0.0], [-0.5, 0, 0], [0.5, 0, 0], ] , method = "analytical", include=None, exclude=None)
+        derivatives = a.derivatives(H2, positions =[[0.0, 0.0, 0.0], ] , method = "analytical", include=None, exclude=None)
 
         print(derivatives)
         print(derivatives.shape)
-
+        print(a._rcut)
 
 
 if __name__ == '__main__':
