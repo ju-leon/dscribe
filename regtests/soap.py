@@ -813,7 +813,7 @@ class SoapTests(TestBaseClass, unittest.TestCase):
         sigma = 0.55
         rcut = 2.0
         nmax = 2
-        lmax = 10
+        lmax = 19
 
         # Limits for radius
         r1 = 0.
@@ -924,7 +924,7 @@ class SoapTests(TestBaseClass, unittest.TestCase):
         print("Numerical: {}".format(numerical_power_spectrum))
         print("Analytical: {}".format(analytical_power_spectrum))
 
-        self.assertTrue(np.allclose(numerical_power_spectrum, analytical_power_spectrum, atol=1e-10, rtol=0.01))
+        self.assertTrue(np.allclose(numerical_power_spectrum, analytical_power_spectrum, atol=1e-14, rtol=0.01))
 
     def test_poly_integration(self):
         """Tests that the partial power spectrum with the polynomial basis done
