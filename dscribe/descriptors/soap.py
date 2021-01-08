@@ -764,9 +764,22 @@ class SOAP(Descriptor):
             average,
         )
 
-        
+        result = []
+        offset = lmax*lmax + 2*lmax
 
-        return c
+        NsTs100 = nmax*n_species*100
+        Ns100 = nmax*100
+
+        # Remove unused coefficents
+        for i in range(n_centers):
+            for s in range(n_species):
+                start = NsTs100 * i + Ns100 * s
+                end = start + offset*nmax + nmax
+                result.append(c[start:end])
+
+        result = np.array(result).flatten()
+
+        return result
 
 
     def get_soap_coeffs_poly(self, system, centers, rcut, cutoff_padding, nmax, lmax, eta, crossover, average, atomic_numbers=None):
