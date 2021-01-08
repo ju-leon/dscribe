@@ -39,5 +39,6 @@ void getC(double* Cs, double* ws, double* rw2, double * gns, double* summed, dou
 void accumC(double* Cs, double* C, int lMax, int gnsize, int typeI, int i, int nCoeffs);
 void getP(py::detail::unchecked_mutable_reference<double, 2> &Ps, double* Cts, int Nt, int lMax, int nMax, int Hs, double rCut2, int nFeatures, bool crossover, int nCoeffs);
 void soapGeneral(py::array_t<double> PsArr, py::array_t<double> positions, py::array_t<double> HposArr, py::array_t<int> atomicNumbersArr, py::array_t<int> orderedSpeciesArr, double rCut, double cutoffPadding, int nAtoms, int Nt, int nMax, int lMax, int Hs, double alpha, py::array_t<double> rwArr, py::array_t<double> gssArr, bool crossover, string average);
+void soapCoeffs(py::array_t<double> CsArr, py::array_t<double> positions, py::array_t<double> HposArr, py::array_t<int> atomicNumbersArr, py::array_t<int> orderedSpeciesArr, double rCut, double cutoffPadding, int nAtoms, int Nt, int nMax, int lMax, int Hs, double alpha, py::array_t<double> rwArr, py::array_t<double> gssArr, bool crossover, string average);
 
 #endif

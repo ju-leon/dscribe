@@ -1748,6 +1748,7 @@ void getC(double* C, double* ws, double* rw2, double * gns, double* summed, doub
     isCenter[0] = 0;
 }
 
+//accumC(Cs, C, lMax, nMax, j, i, nCoeffs);
 void accumC(double* Cs, double* C, int lMax, int nMax, int typeI, int i, int nCoeffs)
 {
     for (int n = 0; n < nMax; n++) {
@@ -1769,6 +1770,10 @@ void accumC(double* Cs, double* C, int lMax, int nMax, int typeI, int i, int nCo
  * paper: On representing chemical environments, Phys. Rev. B 87, 184115
  * (2013). Here the square root of the prefactor in the dot-product kernel is
  * used, so that after a possible dot-product the full prefactor is recovered.
+ * 
+ * Hs: Number of Centers(Atoms) from where to expand
+ * Nt: Number of species
+ * 
  */
 void getP(py::detail::unchecked_mutable_reference<double, 2> &Ps, double* Cs, int Nt, int lMax, int nMax, int Hs, double rCut2, int nFeatures, bool crossover, int nCoeffs)
 {
@@ -1789,8 +1794,12 @@ void getP(py::detail::unchecked_mutable_reference<double, 2> &Ps, double* Cs, in
                                 double sum = 0;
                                 for (int m = 0; m < l+1; m++) {
                                     if (m == 0) {
+                                        cout << "Z1: " << Z1 << ", Z2: " << Z2 << ", l: " << l << ", N1: " << N1 << ", N2: " << N2 << ", m: " << m << ", rCut2:  " << rCut2 << " : ";
+                                        cout << Cs[i*nCoeffs+2*Z1*(lMax+1)*(lMax+1)*nMax + 2*(lMax+1)*(lMax+1)*N1 + l*2*(lMax+1)] << "\n";
+
                                         sum += Cs[i*nCoeffs+2*Z1*(lMax+1)*(lMax+1)*nMax + 2*(lMax+1)*(lMax+1)*N1 + l*2*(lMax+1)] // m=0
                                             *Cs[i*nCoeffs+2*Z2*(lMax+1)*(lMax+1)*nMax + 2*(lMax+1)*(lMax+1)*N2 + l*2*(lMax+1)]; // m=0
+                                            
                                     } else {
                                         sum += 2*(Cs[i*nCoeffs+2*Z1*(lMax+1)*(lMax+1)*nMax + 2*(lMax+1)*(lMax+1)*N1 + l*2*(lMax+1) + 2*m]
                                                 *Cs[i*nCoeffs+2*Z2*(lMax+1)*(lMax+1)*nMax + 2*(lMax+1)*(lMax+1)*N2 + l*2*(lMax+1) + 2*m]
@@ -1831,6 +1840,8 @@ void getP(py::detail::unchecked_mutable_reference<double, 2> &Ps, double* Cs, in
         }
     }
 }
+
+
 void soapGeneral(py::array_t<double> PsArr, py::array_t<double> positions, py::array_t<double> HposArr, py::array_t<int> atomicNumbersArr, py::array_t<int> orderedSpeciesArr, double rCut, double cutoffPadding, int nAtoms, int Nt, int nMax, int lMax, int Hs, double alpha, py::array_t<double> rwArr, py::array_t<double> gssArr, bool crossover, string average)
 {
     int nFeatures = crossover ? (Nt*nMax)*(Nt*nMax+1)/2*(lMax+1) : Nt*(lMax+1)*((nMax+1)*nMax)/2;
@@ -1959,6 +1970,119 @@ void soapGeneral(py::array_t<double> PsArr, py::array_t<double> positions, py::a
     }
 
     free(Cs);
+    free(cf);
+    free(dx);
+    free(dy);
+    free(dz);
+    free(ris);
+    free(oOri);
+    free(ws);
+    free(oOr);
+    free(rw2) ;
+    free(oO4arri);
+    free(minExp);
+    free(pluExp);
+    free(C);
+}
+
+
+void soapCoeffs(py::array_t<double> CsArr, py::array_t<double> positions, py::array_t<double> HposArr, py::array_t<int> atomicNumbersArr, py::array_t<int> orderedSpeciesArr, double rCut, double cutoffPadding, int nAtoms, int Nt, int nMax, int lMax, int Hs, double alpha, py::array_t<double> rwArr, py::array_t<double> gssArr, bool crossover, string average)
+{
+    int nFeatures = crossover ? (Nt*nMax)*(Nt*nMax+1)/2*(lMax+1) : Nt*(lMax+1)*((nMax+1)*nMax)/2;
+    auto atomicNumbers = atomicNumbersArr.unchecked<1>();
+    auto species = orderedSpeciesArr.unchecked<1>();
+    //auto Ps = PsArr.mutable_unchecked<2>();
+    double *Hpos = (double*)HposArr.request().ptr;
+    double *rw = (double*)rwArr.request().ptr;
+    double *gss = (double*)gssArr.request().ptr;
+    double* cf = factorListSet();
+    int* isCenter = (int*)malloc(sizeof(int));
+    isCenter[0] = 0;
+    const int rsize = 100; // The number of points in the radial integration grid
+    double rCut2 = rCut*rCut;
+    double* dx = tot;
+    double* dy = tot;
+    double* dz = tot;
+    double* ris = tot;
+    double* oOri = tot;
+    double* ws  = getws();
+    double* oOr = getoOr(rw, rsize);
+    double* rw2 = getrw2(rw, rsize);
+    double* oO4arri = totrs;
+    double* minExp = totrs;
+    double* pluExp = totrs;
+    double* C = (double*) malloc(2*sd*(lMax+1)*(lMax+1)*nMax);
+
+    // Initialize arrays for storing the C coefficients.
+    int nCoeffs = 2*(lMax+1)*(lMax+1)*nMax*Nt;
+    int nCoeffsAll = nCoeffs*Hs;
+    //double* Cs = (double*) malloc(sizeof(double)*nCoeffsAll);
+    double* CsAve;
+    //memset(Cs, 0.0, nCoeffsAll*sizeof(double));
+    py::buffer_info buf1 = CsArr.request();
+    double* Cs = static_cast<double *>(buf1.ptr);
+
+
+    if (average == "inner") {
+        CsAve = (double*) malloc(nCoeffs*sizeof(double));
+        memset(CsAve, 0.0, nCoeffs*sizeof(double));
+    }
+
+    // Create a mapping between an atomic index and its internal index in the
+    // output. The list of species is already ordered.
+    map<int, int> ZIndexMap;
+    for (int i = 0; i < species.size(); ++i) {
+        ZIndexMap[species(i)] = i;
+    }
+
+    // Initialize binning
+    CellList cellList(positions, rCut+cutoffPadding);
+
+    // Loop through central points
+    for (int i = 0; i < Hs; i++) {
+
+        // Get all neighbours for the central atom i
+        double ix = Hpos[3*i];
+        double iy = Hpos[3*i+1];
+        double iz = Hpos[3*i+2];
+        CellListResult result = cellList.getNeighboursForPosition(ix, iy, iz);
+
+        // Sort the neighbours by type
+        map<int, vector<int>> atomicTypeMap;
+        for (const int &idx : result.indices) {
+            int Z = atomicNumbers(idx);
+            atomicTypeMap[Z].push_back(idx);
+        };
+
+        // Loop through neighbours sorted by type
+        for (const auto &ZIndexPair : atomicTypeMap) {
+
+            // j is the internal index for this atomic number
+            int j = ZIndexMap[ZIndexPair.first];
+            int n_neighbours = ZIndexPair.second.size();
+
+            double* Ylmi; double* Flir; double* summed;
+            isCenter[0] = 0;
+
+            // Notice that due to the numerical integration the getDeltas
+            // function here has special functionality for positions that are
+            // centered on an atom.
+            n_neighbours = getDeltas(dx, dy, dz, ris, rw, rCut, oOri, oO4arri, minExp, pluExp, isCenter, alpha, positions, ix, iy, iz, ZIndexPair.second, rsize, i, j);
+
+            Flir = getFlir(oO4arri, ris, minExp, pluExp, n_neighbours, rsize, lMax);
+            Ylmi = getYlmi(dx, dy, dz, oOri, cf, n_neighbours, lMax);
+            summed = getIntegrand(Flir, Ylmi, rsize, n_neighbours, lMax);
+
+            getC(C, ws, rw2, gss, summed, rCut, lMax, rsize, nMax, isCenter, alpha);
+            accumC(Cs, C, lMax, nMax, j, i, nCoeffs);
+            
+            free(Flir);
+            free(Ylmi);
+            free(summed);
+        }
+    }
+
+    //free(Cs);
     free(cf);
     free(dx);
     free(dy);

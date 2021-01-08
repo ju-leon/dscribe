@@ -649,7 +649,6 @@ void getP(py::detail::unchecked_mutable_reference<double, 2> &Ps, double* Cs, in
     int pIdx;
     int NsTs100 = nMax*Nt*100;
     int Ns100 = nMax*100;
-
     for (int i = 0; i < Hs; i++) {
         pIdx = 0;
         for (int Z1 = 0; Z1 < Nt; Z1++) {
@@ -666,6 +665,7 @@ void getP(py::detail::unchecked_mutable_reference<double, 2> &Ps, double* Cs, in
                                     int offset = l*l + m;
                                     int coeffIdx = l*(l+1)/2 + int((m+1)/2);
                                     double coefficient = coeffs[coeffIdx];
+                                    cout << "Index 1: " << NsTs100*i + Ns100*Z1 + offset*nMax + N1 << "\n";
                                     sum += coefficient*Cs[NsTs100*i + Ns100*Z1 + offset*nMax + N1]*Cs[NsTs100*i + Ns100*Z2 + offset*nMax + N2];
                                 }
                                 double prefactor = PI*sqrt(8.0/(2.0*l+1.0));  // Normalization factor
@@ -699,6 +699,7 @@ void getP(py::detail::unchecked_mutable_reference<double, 2> &Ps, double* Cs, in
         }
     }
 }
+
 
 void soapGTO(py::array_t<double> PsArr, py::array_t<double> positions, py::array_t<double> HposArr, py::array_t<double> alphasArr, py::array_t<double> betasArr, py::array_t<int> atomicNumbersArr, py::array_t<int> orderedSpeciesArr, double rCut, double cutoffPadding, int nAtoms, int Nt, int nMax, int lMax, int Hs, double eta, bool crossover, string average)
 {
@@ -913,6 +914,249 @@ void soapGTO(py::array_t<double> PsArr, py::array_t<double> positions, py::array
     }
 
     free(Cs);
+
+    return;
+}
+
+
+
+void soapCoeffsGTO(py::array_t<double> CsArr, py::array_t<double> positions, py::array_t<double> HposArr, py::array_t<double> alphasArr, py::array_t<double> betasArr, py::array_t<int> atomicNumbersArr, py::array_t<int> orderedSpeciesArr, double rCut, double cutoffPadding, int nAtoms, int Nt, int nMax, int lMax, int Hs, double eta, bool crossover, string average)
+{
+
+    cout << "RECOMPILED \n";
+
+    int nFeatures = crossover ? (Nt*nMax)*(Nt*nMax+1)/2*(lMax+1) : Nt*(lMax+1)*((nMax+1)*nMax)/2;
+    auto atomicNumbers = atomicNumbersArr.unchecked<1>();
+    auto species = orderedSpeciesArr.unchecked<1>();
+
+    //auto Ps = PsArr.mutable_unchecked<2>();
+
+    double *Hpos = (double*)HposArr.request().ptr;
+    double *alphas = (double*)alphasArr.request().ptr;
+    double *betas = (double*)betasArr.request().ptr;
+
+    double oOeta = 1.0/eta;
+    double oOeta3O2 = sqrt(oOeta*oOeta*oOeta);
+
+    double NsNs = nMax*nMax;
+    double* dx  = (double*) malloc(sizeof(double)*nAtoms);
+    double* dy  = (double*) malloc(sizeof(double)*nAtoms);
+    double* dz  = (double*) malloc(sizeof(double)*nAtoms);
+    double* z2 = (double*) malloc(sizeof(double)*nAtoms);
+    double* z4 = (double*) malloc(sizeof(double)*nAtoms);
+    double* z6 = (double*) malloc(sizeof(double)*nAtoms);
+    double* z8 = (double*) malloc(sizeof(double)*nAtoms);
+    double* r2 = (double*) malloc(sizeof(double)*nAtoms);
+    double* r4 = (double*) malloc(sizeof(double)*nAtoms);
+    double* r6 = (double*) malloc(sizeof(double)*nAtoms);
+    double* r8 = (double*) malloc(sizeof(double)*nAtoms);
+    double* ReIm2 = (double*) malloc(2*sizeof(double)*nAtoms);// 2 -> Re + ixIm
+    double* ReIm3 = (double*) malloc(2*sizeof(double)*nAtoms);// 2 -> Re + ixIm
+    double* ReIm4 = (double*) malloc(2*sizeof(double)*nAtoms);// 2 -> Re + ixIm
+    double* ReIm5 = (double*) malloc(2*sizeof(double)*nAtoms);// 2 -> Re + ixIm
+    double* ReIm6 = (double*) malloc(2*sizeof(double)*nAtoms);// 2 -> Re + ixIm
+    double* ReIm7 = (double*) malloc(2*sizeof(double)*nAtoms);// 2 -> Re + ixIm
+    double* ReIm8 = (double*) malloc(2*sizeof(double)*nAtoms);// 2 -> Re + ixIm
+    double* ReIm9 = (double*) malloc(2*sizeof(double)*nAtoms);// 2 -> Re + ixIm
+    double* exes = (double*) malloc (sizeof(double)*nAtoms);
+    double* preCoef = (double*) malloc(96*sizeof(double)*nAtoms);
+    double* bOa = (double*) malloc((lMax+1)*NsNs*sizeof(double));
+    double* aOa = (double*) malloc((lMax+1)*nMax*sizeof(double));
+
+    int Nx2 = 2*nMax; int Nx3 = 3*nMax; int Nx4 = 4*nMax; int Nx5 = 5*nMax;
+    int Nx6 = 6*nMax; int Nx7 = 7*nMax; int Nx8 = 8*nMax; int Nx9 = 9*nMax;
+    int Nx10 = 10*nMax; int Nx11 = 11*nMax; int Nx12 = 12*nMax; int Nx13 = 13*nMax;
+    int Nx14 = 14*nMax; int Nx15 = 15*nMax; int Nx16 = 16*nMax; int Nx17 = 17*nMax;
+    int Nx18 = 18*nMax; int Nx19 = 19*nMax; int Nx20 = 20*nMax; int Nx21 = 21*nMax;
+    int Nx22 = 22*nMax; int Nx23 = 23*nMax; int Nx24 = 24*nMax; int Nx25 = 25*nMax;
+    int Nx26 = 26*nMax; int Nx27 = 27*nMax; int Nx28 = 28*nMax; int Nx29 = 29*nMax;
+    int Nx30 = 30*nMax; int Nx31 = 31*nMax; int Nx32 = 32*nMax; int Nx33 = 33*nMax;
+    int Nx34 = 34*nMax; int Nx35 = 35*nMax; int Nx36 = 36*nMax; int Nx37 = 37*nMax;
+    int Nx38 = 38*nMax; int Nx39 = 39*nMax; int Nx40 = 40*nMax; int Nx41 = 41*nMax;
+    int Nx42 = 42*nMax; int Nx43 = 43*nMax; int Nx44 = 44*nMax; int Nx45 = 45*nMax;
+    int Nx46 = 46*nMax; int Nx47 = 47*nMax; int Nx48 = 48*nMax; int Nx49 = 49*nMax;
+    int Nx50 = 50*nMax; int Nx51 = 51*nMax; int Nx52 = 52*nMax; int Nx53 = 53*nMax;
+    int Nx54 = 54*nMax; int Nx55 = 55*nMax; int Nx56 = 56*nMax; int Nx57 = 57*nMax;
+    int Nx58 = 58*nMax; int Nx59 = 59*nMax; int Nx60 = 60*nMax; int Nx61 = 61*nMax;
+    int Nx62 = 62*nMax; int Nx63 = 63*nMax; int Nx64 = 64*nMax; int Nx65 = 65*nMax;
+    int Nx66 = 66*nMax; int Nx67 = 67*nMax; int Nx68 = 68*nMax; int Nx69 = 69*nMax;
+    int Nx70 = 70*nMax; int Nx71 = 71*nMax; int Nx72 = 72*nMax; int Nx73 = 73*nMax;
+    int Nx74 = 74*nMax; int Nx75 = 75*nMax; int Nx76 = 76*nMax; int Nx77 = 77*nMax;
+    int Nx78 = 78*nMax; int Nx79 = 79*nMax; int Nx80 = 80*nMax; int Nx81 = 81*nMax;
+    int Nx82 = 82*nMax; int Nx83 = 83*nMax; int Nx84 = 84*nMax; int Nx85 = 85*nMax;
+    int Nx86 = 86*nMax; int Nx87 = 87*nMax; int Nx88 = 88*nMax; int Nx89 = 89*nMax;
+    int Nx90 = 90*nMax; int Nx91 = 91*nMax; int Nx92 = 92*nMax; int Nx93 = 93*nMax;
+    int Nx94 = 94*nMax; int Nx95 = 95*nMax; int Nx96 = 96*nMax; int Nx97 = 97*nMax;
+    int Nx98 = 98*nMax; int Nx99 = 99*nMax;
+    int t2 = 2*nAtoms;  int t3 = 3*nAtoms;  int t4 = 4*nAtoms;
+    int t5 = 5*nAtoms;  int t6 = 6*nAtoms;  int t7 = 7*nAtoms;
+    int t8 = 8*nAtoms;  int t9 = 9*nAtoms;  int t10 = 10*nAtoms;
+    int t11 = 11*nAtoms;  int t12 = 12*nAtoms;  int t13 = 13*nAtoms;
+    int t14 = 14*nAtoms;  int t15 = 15*nAtoms;  int t16 = 16*nAtoms;
+    int t17 = 17*nAtoms;  int t18 = 18*nAtoms;  int t19 = 19*nAtoms;
+    int t20 = 20*nAtoms;  int t21 = 21*nAtoms;  int t22 = 22*nAtoms;
+    int t23 = 23*nAtoms;  int t24 = 24*nAtoms;  int t25 = 25*nAtoms;
+    int t26 = 26*nAtoms;  int t27 = 27*nAtoms;  int t28 = 28*nAtoms;
+    int t29 = 29*nAtoms;  int t30 = 30*nAtoms;  int t31 = 31*nAtoms;
+    int t32 = 32*nAtoms;  int t33 = 33*nAtoms;  int t34 = 34*nAtoms;
+    int t35 = 35*nAtoms;  int t36 = 36*nAtoms;  int t37 = 37*nAtoms;
+    int t38 = 38*nAtoms;  int t39 = 39*nAtoms;  int t40 = 40*nAtoms;
+    int t41 = 41*nAtoms;  int t42 = 42*nAtoms;  int t43 = 43*nAtoms;
+    int t44 = 44*nAtoms;  int t45 = 45*nAtoms;  int t46 = 46*nAtoms;
+    int t47 = 47*nAtoms;  int t48 = 48*nAtoms;  int t49 = 49*nAtoms;
+    int t50 = 50*nAtoms;  int t51 = 51*nAtoms;  int t52 = 52*nAtoms;
+    int t53 = 53*nAtoms;  int t54 = 54*nAtoms;  int t55 = 55*nAtoms;
+    int t56 = 56*nAtoms;  int t57 = 57*nAtoms;  int t58 = 58*nAtoms;
+    int t59 = 59*nAtoms;  int t60 = 60*nAtoms;  int t61 = 61*nAtoms;
+    int t62 = 62*nAtoms;  int t63 = 63*nAtoms;  int t64 = 64*nAtoms;
+    int t65 = 65*nAtoms;  int t66 = 66*nAtoms;  int t67 = 67*nAtoms;
+    int t68 = 68*nAtoms;  int t69 = 69*nAtoms;  int t70 = 70*nAtoms;
+    int t71 = 71*nAtoms;  int t72 = 72*nAtoms;  int t73 = 73*nAtoms;
+    int t74 = 74*nAtoms;  int t75 = 75*nAtoms;  int t76 = 76*nAtoms;
+    int t77 = 77*nAtoms;  int t78 = 78*nAtoms;  int t79 = 79*nAtoms;
+    int t80 = 80*nAtoms;  int t81 = 81*nAtoms;  int t82 = 82*nAtoms;
+    int t83 = 83*nAtoms;  int t84 = 84*nAtoms;  int t85 = 85*nAtoms;
+    int t86 = 86*nAtoms;  int t87 = 87*nAtoms;  int t88 = 88*nAtoms;
+    int t89 = 89*nAtoms;  int t90 = 90*nAtoms;  int t91 = 91*nAtoms;
+    int t92 = 92*nAtoms;  int t93 = 93*nAtoms;  int t94 = 94*nAtoms;
+    int t95 = 95*nAtoms;  int t96 = 96*nAtoms;  int t97 = 97*nAtoms;
+    int t98 = 98*nAtoms;  int t99 = 99*nAtoms;
+
+    cout << "INIT DONE \n";
+    // Initialize array for storing the C coefficients. 100 is used as the buffer
+    // length.
+    int nCoeffs = 100*Nt*nMax;
+    int nCoeffsAll = nCoeffs*Hs;
+    //double* Cs = (double*) malloc(nCoeffsAll*sizeof(double));
+    double* CsAve;
+    //memset(Cs, 0.0, nCoeffsAll*sizeof(double));
+
+    py::buffer_info buf1 = CsArr.request();
+    double* Cs = static_cast<double *>(buf1.ptr);
+
+    cout << "CS INIT DONE\n";
+
+    if (average == "inner") {
+        CsAve = (double*) malloc(nCoeffs*sizeof(double));
+        memset(CsAve, 0.0, nCoeffs*sizeof(double));
+    }
+
+    // Initialize binning
+    CellList cellList(positions, rCut+cutoffPadding);
+
+    // Create a mapping between an atomic index and its internal index in the
+    // output. The list of species is already ordered.
+    map<int, int> ZIndexMap;
+    for (int i = 0; i < species.size(); ++i) {
+        ZIndexMap[species(i)] = i;
+    }
+
+    getAlphaBeta(aOa, bOa, alphas, betas, nMax, lMax, oOeta, oOeta3O2);
+
+    cout << "Before centers \n";
+
+    // Loop through the centers
+    for (int i = 0; i < Hs; i++) {
+
+        // Get all neighbours for the central atom i
+        double ix = Hpos[3*i];
+        double iy = Hpos[3*i+1];
+        double iz = Hpos[3*i+2];
+        CellListResult result = cellList.getNeighboursForPosition(ix, iy, iz);
+
+
+        cout << "Sort \n";
+        // Sort the neighbours by type
+        map<int, vector<int>> atomicTypeMap;
+        for (const int &idx : result.indices) {
+            int Z = atomicNumbers(idx);
+            atomicTypeMap[Z].push_back(idx);
+        };
+
+
+        cout << "Loop \n";
+        // Loop through neighbours sorted by type
+        for (const auto &ZIndexPair : atomicTypeMap) {
+
+            // j is the internal index for this atomic number
+            int j = ZIndexMap[ZIndexPair.first];
+            int n_neighbours = ZIndexPair.second.size();
+
+            // Save the neighbour distances into the arrays dx, dy and dz
+            getDeltas(dx, dy, dz, positions, ix, iy, iz, ZIndexPair.second);
+
+            getRsZs(dx, dy, dz, r2, r4, r6, r8, z2, z4, z6, z8, n_neighbours);
+            getCfactors(preCoef, n_neighbours, dx, dy, dz, z2, z4, z6, z8, r2, r4, r6, r8, ReIm2, ReIm3, ReIm4, ReIm5, ReIm6, ReIm7, ReIm8, ReIm9, nAtoms, lMax, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28, t29, t30, t31, t32, t33, t34, t35, t36, t37, t38, t39, t40, t41, t42, t43, t44, t45, t46, t47, t48, t49, t50, t51, t52, t53, t54, t55, t56, t57, t58, t59, t60, t61, t62, t63, t64, t65, t66, t67, t68, t69, t70, t71, t72, t73, t74, t75, t76, t77, t78, t79, t80, t81, t82, t83, t84, t85, t86, t87, t88, t89, t90, t91, t92, t93, t94, t95, t96, t97, t98, t99);
+            getC(Cs, preCoef, dx, dy, dz, r2, bOa, aOa, exes, nAtoms, n_neighbours, nMax, Nt, lMax, i, j, Nx2, Nx3, Nx4, Nx5, Nx6, Nx7, Nx8, Nx9, Nx10, Nx11, Nx12, Nx13, Nx14, Nx15, Nx16, Nx17, Nx18, Nx19, Nx20, Nx21, Nx22, Nx23, Nx24, Nx25, Nx26, Nx27, Nx28, Nx29, Nx30, Nx31, Nx32, Nx33, Nx34, Nx35, Nx36, Nx37, Nx38, Nx39, Nx40, Nx41, Nx42, Nx43, Nx44, Nx45, Nx46, Nx47, Nx48, Nx49, Nx50, Nx51, Nx52, Nx53, Nx54, Nx55, Nx56, Nx57, Nx58, Nx59, Nx60, Nx61, Nx62, Nx63, Nx64, Nx65, Nx66, Nx67, Nx68, Nx69, Nx70, Nx71, Nx72, Nx73, Nx74, Nx75, Nx76, Nx77, Nx78, Nx79, Nx80, Nx81, Nx82, Nx83, Nx84, Nx85, Nx86, Nx87, Nx88, Nx89, Nx90, Nx91, Nx92, Nx93, Nx94, Nx95, Nx96, Nx97, Nx98, Nx99, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28, t29, t30, t31, t32, t33, t34, t35, t36, t37, t38, t39, t40, t41, t42, t43, t44, t45, t46, t47, t48, t49, t50, t51, t52, t53, t54, t55, t56, t57, t58, t59, t60, t61, t62, t63, t64, t65, t66, t67, t68, t69, t70, t71, t72, t73, t74, t75, t76, t77, t78, t79, t80, t81, t82, t83, t84, t85, t86, t87, t88, t89, t90, t91, t92, t93, t94, t95, t96, t97, t98, t99);
+        }
+    }
+
+
+    cout << "After loop \n";
+
+    free(dx);
+    free(dy);
+    free(dz);
+    free(z2);
+    free(z4);
+    free(z6);
+    free(z8);
+    free(r2);
+    free(r4);
+    free(r6);
+    free(r8);
+    free(ReIm2);
+    free(ReIm3);
+    free(ReIm4);
+    free(ReIm5);
+    free(ReIm6);
+    free(ReIm7);
+    free(ReIm8);
+    free(ReIm9);
+    free(exes);
+    free(preCoef);
+    free(bOa);
+    free(aOa);
+
+    cout << "After free \n";
+    /*
+    // If inner averaging is requested, average the coefficients over the
+    // positions (axis 0 in Cs matrix) before calculating the power spectrum.
+    if (average == "inner") {
+        for (int i = 0; i < Hs; i++) {
+            for (int j = 0; j < nCoeffs; j++) {
+                CsAve[j] += Cs[i*nCoeffs + j];
+            }
+        }
+        for (int j = 0; j < nCoeffs; j++) {
+            CsAve[j] = CsAve[j] / (double)Hs;
+        }
+        getP(Ps, CsAve, nMax, Nt, 1, lMax, crossover);
+        free(CsAve);
+    // Average the power spectrum across atoms
+    } else if (average == "outer") {
+        // We allocate the memory and give array_t a pointer to it. This way
+        // the memory is owned and freed by C++.
+        double* PsTemp = new double[nFeatures*Hs];
+        py::array_t<double> PsTempArrChecked({Hs, nFeatures}, PsTemp);
+        auto PsTempArr = PsTempArrChecked.mutable_unchecked<2>();
+        getP(PsTempArr, Cs, nMax, Nt, Hs, lMax, crossover);
+        for (int i = 0; i < Hs; i++) {
+            for (int j = 0; j < nFeatures; j++) {
+                Ps(0, j) += PsTempArr(i, j);
+            }
+        }
+        for (int j = 0; j < nFeatures; j++) {
+            Ps(0, j) = Ps(0, j) / (double)Hs;
+        }
+        free(PsTemp);
+    // Regular power spectrum without averaging
+    } else {
+        getP(Ps, Cs, nMax, Nt, Hs, lMax, crossover);
+    }
+
+    */
+    //free(Cs);
 
     return;
 }

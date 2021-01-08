@@ -32,6 +32,8 @@ PYBIND11_MODULE(ext, m) {
     // SOAP
     m.def("soap_gto", &soapGTO, "SOAP with gaussian type orbital radial basis set.");
     m.def("soap_general", &soapGeneral, "SOAP with a general radial basis set.");
+    m.def("soap_coeffs", &soapCoeffs, "Get SOAP coefficents");
+    m.def("soap_coeffs_gto", &soapCoeffsGTO, "Get SOAP coefficents with gaussian type orbital radial basis set.");
 
     // ACSF
     py::class_<ACSF>(m, "ACSFWrapper")

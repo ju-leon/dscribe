@@ -102,6 +102,9 @@ class SOAP(Descriptor):
             sparse (bool): Whether the output should be a sparse matrix or a
                 dense numpy array.
         """
+
+        print("Using custom library")
+
         super().__init__(periodic=periodic, flatten=True, sparse=sparse)
 
         # Setup the involved chemical species
@@ -256,6 +259,8 @@ class SOAP(Descriptor):
             positions and the second dimension is determined by the
             get_number_of_features()-function.
         """
+        print('Creating single')
+
         # Transform the input system into the internal System-object
         system = self.get_system(system)
 
@@ -346,6 +351,199 @@ class SOAP(Descriptor):
         # Make into a sparse array if requested
         if self._sparse:
             soap_mat = coo_matrix(soap_mat)
+
+        return soap_mat
+
+
+    def create_coeffs(self, system, positions=None, n_jobs=1, verbose=False):
+        """Return the SOAP output for the given systems and given positions.
+
+        Args:
+            system (:class:`ase.Atoms` or list of :class:`ase.Atoms`): One or
+                many atomic structures.
+            positions (list): Positions where to calculate SOAP. Can be
+                provided as cartesian positions or atomic indices. If no
+                positions are defined, the SOAP output will be created for all
+                atoms in the system. When calculating SOAP for multiple
+                systems, provide the positions as a list for each system.
+            n_jobs (int): Number of parallel jobs to instantiate. Parallellizes
+                the calculation across samples. Defaults to serial calculation
+                with n_jobs=1.
+            verbose(bool): Controls whether to print the progress of each job
+                into to the console.
+
+        Returns:
+            np.ndarray | scipy.sparse.csr_matrix: The SOAP output for the given
+            systems and positions. The return type depends on the
+            'sparse'-attribute. The first dimension is determined by the amount
+            of positions and systems and the second dimension is determined by
+            the get_number_of_features()-function. When multiple systems are
+            provided the results are ordered by the input order of systems and
+            their positions.
+        """
+
+        print("Creating coeffs")
+
+        # If single system given, skip the parallelization
+        if isinstance(system, (Atoms, System)):
+            return self.create_single_coeffs(system, positions)
+        else:
+            self._check_system_list(system)
+
+        # Combine input arguments
+        n_samples = len(system)
+        if positions is None:
+            inp = [(i_sys,) for i_sys in system]
+        else:
+            n_pos = len(positions)
+            if n_pos != n_samples:
+                raise ValueError(
+                    "The given number of positions does not match the given"
+                    "number os systems."
+                )
+            inp = list(zip(system, positions))
+
+        # For SOAP the output size for each job depends on the exact arguments.
+        # Here we precalculate the size for each job to preallocate memory and
+        # make the process faster.
+        k, m = divmod(n_samples, n_jobs)
+        jobs = (inp[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(n_jobs))
+        output_sizes = []
+        for i_job in jobs:
+            n_desc = 0
+            if self._average == "outer" or self._average == "inner":
+                n_desc = len(i_job)
+            elif positions is None:
+                n_desc = 0
+                for job in i_job:
+                    n_desc += len(job[0])
+            else:
+                n_desc = 0
+                for i_sample, i_pos in i_job:
+                    if i_pos is not None:
+                        n_desc += len(i_pos)
+                    else:
+                        n_desc += len(i_sample)
+            output_sizes.append(n_desc)
+
+
+        # Create in parallel
+        #output = self.create_parallel(inp, self.create_single_coeffs, n_jobs, output_sizes, verbose=verbose)
+
+        output = []
+        for (entry, position) in zip(system, positions):
+            output.append(self.create_single_coeffs(entry, position))
+
+        return np.array(output)
+
+
+    def create_single_coeffs(self, system, positions=None):
+        """Return the SOAP output for the given system and given positions.
+
+        Args:
+            system (:class:`ase.Atoms` | :class:`.System`): Input system.
+            positions (list): Cartesian positions or atomic indices. If
+                specified, the SOAP spectrum will be created for these points.
+                If no positions are defined, the SOAP output will be created
+                for all atoms in the system.
+
+        Returns:
+            np.ndarray | scipy.sparse.coo_matrix: The SOAP output for the
+            given system and positions. The return type depends on the
+            'sparse'-attribute. The first dimension is given by the number of
+            positions and the second dimension is determined by the
+            get_number_of_features()-function.
+        """
+
+        # Transform the input system into the internal System-object
+        system = self.get_system(system)
+
+        # Check that the system does not have elements that are not in the list
+        # of atomic numbers
+        self.check_atomic_numbers(system.get_atomic_numbers())
+
+        # Check if periodic is valid
+        if self.periodic:
+            cell = system.get_cell()
+            if np.cross(cell[0], cell[1]).dot(cell[2]) == 0:
+                raise ValueError(
+                    "System doesn't have cell to justify periodicity."
+                )
+
+        # Setup the local positions
+        if positions is None:
+            list_positions = system.get_positions()
+        else:
+            # Check validity of position definitions and create final cartesian
+            # position list
+            list_positions = []
+            if len(positions) == 0:
+                raise ValueError(
+                    "The argument 'positions' should contain a non-empty set of"
+                    " atomic indices or cartesian coordinates with x, y and z "
+                    "components."
+                )
+            for i in positions:
+                if np.issubdtype(type(i), np.integer):
+                    list_positions.append(system.get_positions()[i])
+                elif isinstance(i, (list, tuple, np.ndarray)):
+                    if len(i) != 3:
+                        raise ValueError(
+                            "The argument 'positions' should contain a "
+                            "non-empty set of atomic indices or cartesian "
+                            "coordinates with x, y and z components."
+                        )
+                    list_positions.append(i)
+                else:
+                    raise ValueError(
+                        "Create method requires the argument 'positions', a "
+                        "list of atom indices and/or positions."
+                    )
+
+        # The radial cutoff is extended by adding a padding that depends on
+        # the used used sigma value. The padding is chosen so that the
+        # gaussians decay to the specified threshold value at the cutoff
+        # distance.
+        threshold = 0.001
+        cutoff_padding = self._sigma*np.sqrt(-2*np.log(threshold))
+
+        # Create the extended system if periodicity is requested
+        if self.periodic:
+            system = get_extended_system(system, self._rcut+cutoff_padding, return_cell_indices=False)
+
+        # Determine the SOAPLite function to call based on periodicity and
+        # rbf
+
+
+
+        if self._rbf == "gto":
+            soap_mat = self.get_soap_coeffs_gto(
+                system,
+                list_positions,
+                self._alphas,
+                self._betas,
+                rcut=self._rcut,
+                cutoff_padding=cutoff_padding,
+                nmax=self._nmax,
+                lmax=self._lmax,
+                eta=self._eta,
+                crossover=self.crossover,
+                average=self._average,
+                atomic_numbers=None,
+                )
+        elif self._rbf == "polynomial":
+            soap_mat = self.get_soap_coeffs_poly(
+                system,
+                list_positions,
+                rcut=self._rcut,
+                cutoff_padding=cutoff_padding,
+                nmax=self._nmax,
+                lmax=self._lmax,
+                eta=self._eta,
+                crossover=self.crossover,
+                average=self._average,
+                atomic_numbers=None,
+            )
 
         return soap_mat
 
@@ -499,6 +697,150 @@ class SOAP(Descriptor):
 
         return positions_sorted, atomic_numbers_sorted
 
+    def get_soap_coeffs_gto(self, system, centers, alphas, betas, rcut, cutoff_padding, nmax, lmax, eta, crossover, average, atomic_numbers=None):
+        """Get the SOAP output for the given positions using the gto radial
+        basis.
+
+        Args:
+            system (ase.Atoms): Atomic structure for which the SOAP output is
+                calculated.
+            centers (np.ndarray): Positions at which to calculate SOAP.
+            alphas (np.ndarray): The alpha coeffients for the gto-basis.
+            betas (np.ndarray): The beta coeffients for the gto-basis.
+            rcut (float): Radial cutoff.
+            cutoff_padding (float): The padding that is added for including
+                atoms beyond the cutoff.
+            nmax (int): Maximum number of radial basis functions.
+            lmax (int): Maximum spherical harmonics degree.
+            eta (float): The gaussian smearing width.
+            crossover (bool): Whether to include species crossover in output.
+            atomic_numbers (np.ndarray): Can be used to specify the species for
+                which to calculate the output. If None, all species are included.
+                If given the output is calculated only for the given species and is
+                ordered by atomic number.
+
+        Returns:
+            np.ndarray: SOAP output with the gto radial basis for the given positions.
+        """
+        n_atoms = len(system)
+        positions, Z_sorted = self.flatten_positions(system, atomic_numbers)
+        sorted_species = self._atomic_numbers
+        n_species = len(sorted_species)
+        centers = np.array(centers)
+        n_centers = centers.shape[0]
+        centers = centers.flatten()
+        alphas = alphas.flatten()
+        betas = betas.flatten()
+
+        # Determine shape
+        #n_features = self.get_number_of_features()
+        #if average == "inner" or average == "outer":
+        #    c = np.zeros((1, n_features), dtype=np.float64)
+        #else:
+        #    c = np.zeros((n_centers, n_features), dtype=np.float64)
+
+
+        nCoeffsAll = 100*n_species*nmax*n_centers
+        c = np.zeros(nCoeffsAll)
+
+        # Calculate with extension
+        dscribe.ext.soap_coeffs_gto(
+            c,
+            positions,
+            centers,
+            alphas,
+            betas,
+            Z_sorted,
+            sorted_species,
+            rcut,
+            cutoff_padding,
+            n_atoms,
+            n_species,
+            nmax,
+            lmax,
+            n_centers,
+            eta,
+            crossover,
+            average,
+        )
+
+        
+
+        return c
+
+
+    def get_soap_coeffs_poly(self, system, centers, rcut, cutoff_padding, nmax, lmax, eta, crossover, average, atomic_numbers=None):
+        """Get the SOAP output using polynomial radial basis for the given
+        positions.
+        Args:
+            system(ase.Atoms): Atomic structure for which the SOAP output is
+                calculated.
+            centers(np.ndarray): Positions at which to calculate SOAP.
+            alphas (np.ndarray): The alpha coeffients for the gto-basis.
+            betas (np.ndarray): The beta coeffients for the gto-basis.
+            rCut (float): Radial cutoff.
+            cutoff_padding (float): The padding that is added for including
+                atoms beyond the cutoff.
+            nmax (int): Maximum number off radial basis functions.
+            lmax (int): Maximum spherical harmonics degree.
+            eta (float): The gaussian smearing width.
+            crossover (bool): Whether to include species crossover in output.
+            atomic_numbers (np.ndarray): Can be used to specify the species for
+                which to calculate the output. If None, all species are included.
+                If given the output is calculated only for the given species and is
+                ordered by atomic number.
+        Returns:
+            np.ndarray: SOAP output with the polynomial radial basis for the
+            given positions.
+        """
+        # Get the discretized and orthogonalized polynomial radial basis
+        # function values
+        rx, gss = self.get_basis_poly(rcut, nmax)
+        gss = gss.flatten()
+
+        # Get atoms positions and species in sorted and flattened format
+        n_atoms = len(system)
+        positions, Z_sorted = self.flatten_positions(system, atomic_numbers)
+        sorted_species = self._atomic_numbers
+        n_species = len(sorted_species)
+        centers = np.array(centers)
+        n_centers = centers.shape[0]
+
+        # Determine shape
+        n_features = self.get_number_of_features()
+        #if average == "inner" or average == "outer":
+        #    c = np.zeros((1, n_features), dtype=np.float64)
+        #else:
+        #    c = np.zeros((n_centers, n_features), dtype=np.float64)
+
+        nCoeffsAll = 2*(lmax+1)*(lmax+1)*nmax*n_species*n_centers
+
+        c = np.zeros(nCoeffsAll)
+
+        # Calculate with extension
+        dscribe.ext.soap_coeffs(
+            c,
+            positions,
+            centers,
+            Z_sorted,
+            sorted_species,
+            rcut,
+            cutoff_padding,
+            n_atoms,
+            n_species,
+            nmax,
+            lmax,
+            n_centers,
+            eta,
+            rx,
+            gss,
+            crossover,
+            average
+        )
+
+        return c
+
+
     def get_soap_locals_gto(self, system, centers, alphas, betas, rcut, cutoff_padding, nmax, lmax, eta, crossover, average, atomic_numbers=None):
         """Get the SOAP output for the given positions using the gto radial
         basis.
@@ -576,7 +918,7 @@ class SOAP(Descriptor):
             rCut (float): Radial cutoff.
             cutoff_padding (float): The padding that is added for including
                 atoms beyond the cutoff.
-            nmax (int): Maximum number of radial basis functions.
+            nmax (int): Maximum number off radial basis functions.
             lmax (int): Maximum spherical harmonics degree.
             eta (float): The gaussian smearing width.
             crossover (bool): Whether to include species crossover in output.
