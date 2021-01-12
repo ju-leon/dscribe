@@ -665,7 +665,7 @@ void getP(py::detail::unchecked_mutable_reference<double, 2> &Ps, double* Cs, in
                                     int offset = l*l + m;
                                     int coeffIdx = l*(l+1)/2 + int((m+1)/2);
                                     double coefficient = coeffs[coeffIdx];
-                                    cout << "Index 1: " << NsTs100*i + Ns100*Z1 + offset*nMax + N1 << "\n";
+                                    //cout << "Index 1: " << NsTs100*i + Ns100*Z1 + offset*nMax + N1 << "\n";
                                     sum += coefficient*Cs[NsTs100*i + Ns100*Z1 + offset*nMax + N1]*Cs[NsTs100*i + Ns100*Z2 + offset*nMax + N2];
                                 }
                                 double prefactor = PI*sqrt(8.0/(2.0*l+1.0));  // Normalization factor
@@ -923,7 +923,7 @@ void soapGTO(py::array_t<double> PsArr, py::array_t<double> positions, py::array
 void soapCoeffsGTO(py::array_t<double> CsArr, py::array_t<double> positions, py::array_t<double> HposArr, py::array_t<double> alphasArr, py::array_t<double> betasArr, py::array_t<int> atomicNumbersArr, py::array_t<int> orderedSpeciesArr, double rCut, double cutoffPadding, int nAtoms, int Nt, int nMax, int lMax, int Hs, double eta, bool crossover, string average)
 {
 
-    cout << "RECOMPILED \n";
+    //cout << "RECOMPILED \n";
 
     int nFeatures = crossover ? (Nt*nMax)*(Nt*nMax+1)/2*(lMax+1) : Nt*(lMax+1)*((nMax+1)*nMax)/2;
     auto atomicNumbers = atomicNumbersArr.unchecked<1>();
@@ -1022,7 +1022,7 @@ void soapCoeffsGTO(py::array_t<double> CsArr, py::array_t<double> positions, py:
     int t95 = 95*nAtoms;  int t96 = 96*nAtoms;  int t97 = 97*nAtoms;
     int t98 = 98*nAtoms;  int t99 = 99*nAtoms;
 
-    cout << "INIT DONE \n";
+    //cout << "INIT DONE \n";
     // Initialize array for storing the C coefficients. 100 is used as the buffer
     // length.
     int nCoeffs = 100*Nt*nMax;
@@ -1034,7 +1034,7 @@ void soapCoeffsGTO(py::array_t<double> CsArr, py::array_t<double> positions, py:
     py::buffer_info buf1 = CsArr.request();
     double* Cs = static_cast<double *>(buf1.ptr);
 
-    cout << "CS INIT DONE\n";
+    //cout << "CS INIT DONE\n";
 
     if (average == "inner") {
         CsAve = (double*) malloc(nCoeffs*sizeof(double));
@@ -1053,7 +1053,7 @@ void soapCoeffsGTO(py::array_t<double> CsArr, py::array_t<double> positions, py:
 
     getAlphaBeta(aOa, bOa, alphas, betas, nMax, lMax, oOeta, oOeta3O2);
 
-    cout << "Before centers \n";
+    //cout << "Before centers \n";
 
     // Loop through the centers
     for (int i = 0; i < Hs; i++) {
@@ -1065,7 +1065,7 @@ void soapCoeffsGTO(py::array_t<double> CsArr, py::array_t<double> positions, py:
         CellListResult result = cellList.getNeighboursForPosition(ix, iy, iz);
 
 
-        cout << "Sort \n";
+        //cout << "Sort \n";
         // Sort the neighbours by type
         map<int, vector<int>> atomicTypeMap;
         for (const int &idx : result.indices) {
@@ -1074,7 +1074,7 @@ void soapCoeffsGTO(py::array_t<double> CsArr, py::array_t<double> positions, py:
         };
 
 
-        cout << "Loop \n";
+        //cout << "Loop \n";
         // Loop through neighbours sorted by type
         for (const auto &ZIndexPair : atomicTypeMap) {
 
@@ -1092,7 +1092,7 @@ void soapCoeffsGTO(py::array_t<double> CsArr, py::array_t<double> positions, py:
     }
 
 
-    cout << "After loop \n";
+    //cout << "After loop \n";
 
     free(dx);
     free(dy);
@@ -1118,7 +1118,7 @@ void soapCoeffsGTO(py::array_t<double> CsArr, py::array_t<double> positions, py:
     free(bOa);
     free(aOa);
 
-    cout << "After free \n";
+    //cout << "After free \n";
     /*
     // If inner averaging is requested, average the coefficients over the
     // positions (axis 0 in Cs matrix) before calculating the power spectrum.
